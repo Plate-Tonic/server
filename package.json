@@ -1,0 +1,28 @@
+{
+  "name": "server",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "node src/index.js",
+    "dev": "node src/index.js --watch"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Plate-Tonic/server.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/Plate-Tonic/server/issues"
+  },
+  "homepage": "https://github.com/Plate-Tonic/server#readme",
+  "dependencies": {
+    "bcrypt": "^5.1.1",
+    "express": "^4.21.2",
+    "jsonwebtoken": "^9.0.2",
+    "mongoose": "^8.11.0"
+  }
+}
