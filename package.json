@@ -4,8 +4,10 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "node src/index.js",
-    "dev": "node src/index.js --watch"
+    "start": "node src/index.js",
+    "dev": "node --watch src/index.js",
+    "drop": "node src/utils/dropping.js",
+    "seed": "node src/utils/seeding.js"
   },
   "repository": {
     "type": "git",
