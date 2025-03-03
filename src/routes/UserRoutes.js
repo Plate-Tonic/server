@@ -1,13 +1,7 @@
 const express = require("express");
-const { registerUser, loginUser, getUser, selectMealPlan, updateUser, updateMealPlan, selectSubscription, updateSubscription, getOrderHistory } = require("../controllers/UserController");
+const { getUser, selectMealPlan, updateUser, updateMealPlan, selectSubscription, updateSubscription, getOrderHistory } = require("../controllers/UserController");
 
 const router = express.Router();
-
-// Register a new user
-router.post("/register", registerUser);
-
-// Login an existing user
-router.post("/login", loginUser);
 
 // Get a user's profile
 router.get("/profile/:userID", getUser);
