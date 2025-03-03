@@ -1,11 +1,13 @@
 const { dbConnect, dbDisconnect } = require("./database");
 const { BlogPost } = require("../models/BlogPostModel");
 const { MealPlan } = require("../models/MealPlanModel");
+const { User } = require("../models/UserModel");
 
 async function seed() {
     await dbConnect();
     console.log("Database connected. Seeding now.");
 
+    // Seed blog posts
     const blogPosts = [
         {
             title: "Blog Post 1",
@@ -29,8 +31,8 @@ async function seed() {
             console.error(`Error creating blog post: ${err.message}`);
         }
     }
-
-    const mealPlans = [
+    // Seed meal items
+    const mealItems = [
         {
             name: "Egg & Cheese Wrap",
             imageUrl: "http://example.com/eggcheesewrap.jpg",
@@ -55,12 +57,65 @@ async function seed() {
         }
     ];
 
-    for (let meal of mealPlans) {
+    const mealItemIds = [];
+    for (let meal of mealItems) {
         try {
             const mealItem = await MealPlan.create(meal);
             console.log(`Created meal item: ${mealItem.name}`);
+            mealItemIds.push(mealItem._id);
         } catch (err) {
             console.error(`Error creating meal item: ${err.message}`);
+        }
+    }
+
+    // Seed users
+    const users = [
+        {
+            name: "Veronica Chung",
+            email: "admin@platetonic.com",
+            password: "admintest",
+            isAdmin: true,
+            macroTracker: {
+                age: 28,
+                gender: "female",
+                height: 167,
+                weight: 50,
+                activity: "moderately active",
+                goal: "maintain weight",
+                calorie: 1926,
+                protein: 144,
+                fat: 75,
+                carbs: 169
+            },
+            selectedMealPlan: [mealItemIds[0]._id, mealItemIds[1]._id]
+        },
+        {
+            name: "James Patel",
+            email: "user@platetonic.com",
+            password: "usertest",
+            isAdmin: false,
+            macroTracker: {
+                age: 37,
+                gender: "male",
+                height: 175,
+                weight: 80,
+                activity: "sedentary",
+                goal: "lose weight",
+                calorie: 2057,
+                protein: 154,
+                fat: 80,
+                carbs: 180
+            },
+            selectedMealPlan: null
+        }
+    ];
+
+    for (let user of users) {
+        try {
+            const newUser = await User.create(user);
+            console.log(`Created user: ${newUser.name}`);
+        } catch (err) {
+            console.error(`Error creating user: ${err.message}`);
         }
     }
 

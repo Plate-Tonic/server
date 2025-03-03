@@ -1,4 +1,5 @@
 const mongoose = require("mongoose");
+const { MealPlan } = require("./MealPlanModel");
 
 const UserSchema = new mongoose.Schema({
     name: {
@@ -34,11 +35,11 @@ const UserSchema = new mongoose.Schema({
         fat: { type: Number, required: true },
         carbs: { type: Number, required: true }
     },
-    selectedMealPlan: {
+    selectedMealPlan: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: "MealPlan",
         dietaryPreference: { type: String, enum: ["vegetarian", "vegan", "gluten-free", "nut-free", "none"], default: "none" }
-    }
+    }]
 });
 
 const User = mongoose.model("User", UserSchema);
