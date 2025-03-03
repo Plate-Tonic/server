@@ -10,7 +10,7 @@ async function getUser(request, response) {
             .populate('orderHistory');
 
         if (!user) {
-            return response.status(404).json({ message: "User not found" });
+            return response.status(404).json({ message: "User not found." });
         }
 
         response.json(user);
@@ -23,23 +23,17 @@ async function getUser(request, response) {
 // Update a user's information
 async function updateUser(request, response) {
     try {
-        const { name, address, phoneNumber } = request.body;
+        const updatedUser = await User.findByIdAndUpdate(
+            request.authUserData.userId,
+            request.body,
+            { new: true }
+        );
 
-        // Find user
-        const user = await User.findById(request.authUserData.userId);
-        if (!user) {
-            return response.status(404).json({ message: "User not found" });
+        if (!updatedUser) {
+            return response.status(404).json({ message: "User not found." });
         }
 
-        // Update properties
-        if (name) user.name = name;
-        if (address) user.address = address;
-        if (phoneNumber) user.phoneNumber = phoneNumber;
-
-        // Save updated user information
-        await user.save();
-
-        response.json({ message: "User information updated successfully", data: user });
+        response.json(updatedUser);
     } catch (error) {
         console.error("Error updating user: ", error);
         response.status(500).json({ message: error.message });
@@ -47,14 +41,14 @@ async function updateUser(request, response) {
 }
 
 // Add meal plan
-async function selectMealPlan(request, response) {
+async function selectUserMealPlan(request, response) {
     try {
         const { selectedMealPlan, dietaryRestrictions } = request.body;
 
         // Find user
         const user = await User.findById(request.authUserData.userId);
         if (!user) {
-            return response.status(404).json({ message: "User not found" });
+            return response.status(404).json({ message: "User not found." });
         }
 
         // Check if the user has already selected a meal plan
@@ -69,7 +63,7 @@ async function selectMealPlan(request, response) {
         // Save updated user
         await user.save();
 
-        response.json({ message: "Meal plan selected successfully", data: user });
+        response.json({ selectedMealPlan, dietaryRestrictions });
     } catch (error) {
         console.error("Error selecting meal plan: ", error);
         response.status(500).json({ message: error.message });
@@ -77,24 +71,27 @@ async function selectMealPlan(request, response) {
 }
 
 // Update user's meal plan
-async function updateMealPlan(request, response) {
+async function updateUserMealPlan(request, response) {
+    console.log(request.authUserData);
     try {
-        const { selectedMealPlan, dietaryRestrictions } = request.body;
+        const userId = request.authUserData.userId; // Get logged-in user's ID
 
-        // Find user
-        const user = await User.findById(request.authUserData.userId);
-        if (!user) {
-            return response.status(404).json({ message: "User not found" });
+        // Check if the user is an admin or updating their own meal plan
+        if (request.authUserData.admin || userId === request.params.userId) {
+            const updatedUser = await User.findByIdAndUpdate(
+                userId,
+                { selectedMealPlan: request.body.selectedMealPlan },
+                { new: true }
+            );
+
+            if (!updatedUser) {
+                return response.status(404).json({ message: "User not found." });
+            }
+
+            response.json(updatedUser);
+        } else {
+            return response.status(403).json({ message: "Access denied. You do not have the required permissions." });
         }
-
-        // Update properties
-        if (selectedMealPlan) user.selectedMealPlan = selectedMealPlan;
-        if (dietaryRestrictions) user.dietaryRestrictions = dietaryRestrictions;
-
-        // Save updated user choices
-        await user.save();
-
-        response.json({ message: "Meal plan updated successfully", data: user });
     } catch (error) {
         console.error("Error updating meal plan: ", error);
         response.status(500).json({ message: error.message });
@@ -102,14 +99,14 @@ async function updateMealPlan(request, response) {
 }
 
 // Add subscription plan
-async function selectSubscription(request, response) {
+async function selectUserSubscription(request, response) {
     try {
         const { selectedSubscription, deliveryFrequency } = request.body;
 
         // Find user
         const user = await User.findById(request.authUserData.userId);
         if (!user) {
-            return response.status(404).json({ message: "User not found" });
+            return response.status(404).json({ message: "User not found." });
         }
 
         // Check if the user has already selected a subscription
@@ -124,7 +121,7 @@ async function selectSubscription(request, response) {
         // Save updated user
         await user.save();
 
-        response.json({ message: "Subscription selected successfully", data: user });
+        response.json({ selectedSubscription, deliveryFrequency });
     } catch (error) {
         console.error("Error selecting subscription: ", error);
         response.status(500).json({ message: error.message });
@@ -132,24 +129,30 @@ async function selectSubscription(request, response) {
 }
 
 // Update user's subscription plan
-async function updateSubscription(request, response) {
+async function updateUserSubscription(request, response) {
+    console.log(request.authUserData);
     try {
-        const { selectedSubscription, deliveryFrequency } = request.body;
+        const userId = request.authUserData.userId; // Get logged-in user's ID
 
-        // Find user
-        const user = await User.findById(request.authUserData.userId);
-        if (!user) {
-            return response.status(404).json({ message: "User not found" });
+        // Check if the user is an admin or updating their own subscription
+        if (request.authUserData.admin || userId === request.params.userId) {
+            const updatedUser = await User.findByIdAndUpdate(
+                userId,
+                {
+                    selectedSubscription: request.body.selectedSubscription,
+                    deliveryFrequency: request.body.deliveryFrequency
+                },
+                { new: true }
+            );
+
+            if (!updatedUser) {
+                return response.status(404).json({ message: "User not found." });
+            }
+
+            response.json(updatedUser);
+        } else {
+            return response.status(403).json({ message: "Access denied. You do not have the required permissions." });
         }
-
-        // Update properties
-        if (selectedSubscription) user.selectedSubscription = selectedSubscription;
-        if (deliveryFrequency) user.deliveryFrequency = deliveryFrequency;
-
-        // Save updated user choices
-        await user.save();
-
-        response.json({ message: "Subscription updated successfully", data: user });
     } catch (error) {
         console.error("Error updating subscription: ", error);
         response.status(500).json({ message: error.message });
@@ -166,7 +169,7 @@ async function getOrderHistory(request, response) {
             .populate('items.product');  // Populate the product field to get meal plan details
 
         if (orders.length === 0) {
-            return response.status(404).json({ message: "No orders found for this user" });
+            return response.status(404).json({ message: "No orders found for this user." });
         }
 
         // Respond with order history
@@ -184,10 +187,10 @@ async function getOrderHistory(request, response) {
 // Export controller functions
 module.exports = {
     getUser,
-    selectMealPlan,
     updateUser,
-    updateMealPlan,
-    selectSubscription,
-    updateSubscription,
+    selectUserMealPlan,
+    updateUserMealPlan,
+    selectUserSubscription,
+    updateUserSubscription,
     getOrderHistory
 };

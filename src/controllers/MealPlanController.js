@@ -1,8 +1,10 @@
 const { MealPlan } = require("../models/MealPlanModel");
 
 // Create meal item
-async function createMealPlan(name, description, ingredients) {
+async function createMealPlan(request, response) {
     try {
+        const { name, imageUrl = null, description, ingredients, allergens, calories, protein, fat, carbs } = request.body;
+
         const mealPlan = await MealPlan.create({
             name,
             imageUrl,
@@ -15,23 +17,24 @@ async function createMealPlan(name, description, ingredients) {
             allergens,
         });
 
-        return mealPlan;
+        response.json(mealPlan);
     } catch (error) {
         console.error("Error creating meal item: ", error);
-        throw new Error(error.message);
+        response.status(500).json({ message: error.message });
     }
 }
 
 // Get meal item
 async function getMealPlan(request, response) {
     try {
-        const mealPlan = await MealPlan.findById(request.params.id);
+        const mealPlan = await MealPlan.findById(request.params.mealID);
         if (!mealPlan) {
             return response.status(404).json({ message: "Meal item not found." });
         }
 
         response.json(mealPlan);
     } catch (error) {
+        console.error("Error fetching meal item: ", error);
         response.status(500).json({ message: error.message });
     }
 }
@@ -43,6 +46,7 @@ async function getAllMealPlans(request, response) {
 
         response.json(mealPlans);
     } catch (error) {
+        console.error("Error fetching meal items: ", error);
         response.status(500).json({ message: error.message });
     }
 }
@@ -50,20 +54,19 @@ async function getAllMealPlans(request, response) {
 // Update meal item
 async function updateMealPlan(request, response) {
     try {
-        const mealPlan = await MealPlan.findById(request.params.id);
-        if (!mealPlan) {
+        const updatedMealPlan = await MealPlan.findByIdAndUpdate(
+            request.params.mealID,
+            request.body,
+            { new: true }
+        );
+
+        if (!updatedMealPlan) {
             return response.status(404).json({ message: "Meal item not found." });
         }
 
-        mealPlan.title = request.body.title;
-        mealPlan.author = request.body.author;
-        mealPlan.content = request.body.content;
-        mealPlan.tags = request.body.tags;
-
-        await mealPlan.save();
-
-        response.json(mealPlan);
+        response.json(updatedMealPlan);
     } catch (error) {
+        console.error("Error updating meal item: ", error);
         response.status(500).json({ message: error.message });
     }
 }
@@ -71,13 +74,14 @@ async function updateMealPlan(request, response) {
 // Delete meal item
 async function deleteMealPlan(request, response) {
     try {
-        const mealPlan = await MealPlan.findByIdAndDelete(request.params.id);
+        const mealPlan = await MealPlan.findByIdAndDelete(request.params.mealID);
         if (!mealPlan) {
             return response.status(404).json({ message: "Meal item not found." });
         }
 
         response.json({ message: "Meal item deleted." });
     } catch (error) {
+        console.error("Error deleting meal item: ", error);
         response.status(500).json({ message: error.message });
     }
 }
