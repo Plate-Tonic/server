@@ -23,7 +23,7 @@ const authRoutes = require("./routes/AuthRoutes.js");
 app.use("/", authRoutes);
 
 const userRoutes = require("./routes/UserRoutes.js");
-app.use("/user", userRoutes);
+app.use("/", userRoutes);
 
 const blogPostRoutes = require("./routes/BlogPostRoutes.js");
 app.use("/blog", blogPostRoutes);
