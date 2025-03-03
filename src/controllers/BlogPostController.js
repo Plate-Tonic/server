@@ -64,7 +64,7 @@ async function updateBlogPost(request, response) {
 }
 
 // Delete a blog post
-async function deleteBlogPost() {
+async function deleteBlogPost(request, response) {
     try {
         const blogPost = await BlogPostModel.findByIdAndDelete(request.params.id);
         if (!blogPost) {
