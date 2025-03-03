@@ -1,92 +1,208 @@
+const asyncHandler = require("express-async-handler");
+
 const { BlogPost } = require("../models/BlogPostModel");
 
 // Create a blog post
-async function createBlogPost(title, author, content, tags = [], response = null) {
-    try {
-        const blogPost = await BlogPost.create({
-            title,
-            author,
-            content,
-            tags
-        });
+// async function createBlogPost(title, author, content, tags = [], response = null) {
+//     try {
+//         const blogPost = await BlogPost.create({
+//             title,
+//             author,
+//             content,
+//             tags
+//         });
 
-        // If 'response' is provided (for Express route), send back the response
-        if (response) {
-            response.json(blogPost);
-        } else {
-            console.log("Blog post created: ", blogPost);
-        }
-    } catch (error) {
-        console.error("Error creating blog post: ", error);
+//         // If 'response' is provided (for Express route), send back the response
+//         if (response) {
+//             response.json(blogPost);
+//         } else {
+//             console.log("Blog post created: ", blogPost);
+//         }
+//     } catch (error) {
+//         console.error("Error creating blog post: ", error);
 
-        // If 'response' is provided (for Express route), send error
-        if (response) {
-            response.status(500).json({ message: error.message });
-        }
+//         // If 'response' is provided (for Express route), send error
+//         if (response) {
+//             response.status(500).json({ message: error.message });
+//         }
+//     }
+// }
+const createBlogPost = asyncHandler(async (req, res) => {
+    const { title, author, content, tags = [] } = req.body;
+
+    // Confirm required fields are provided
+    if (!title || !author || !content || !tags) {
+        return res.status(400).json({ message: "All fields are required" });
     }
-}
+
+    // Check for duplicate blog post
+    const duplicate = await BlogPost.findOne({ title }).exec();
+
+    if (duplicate) {
+        return res.status(409).json({ message: "Duplicate blog post title" });
+    }
+
+    // Create and store new blog post
+    const blogPost = await BlogPost.create({
+        title, author, content, tags
+    });
+
+    // Success or error message
+    if (blogPost) {
+        res.status(201).json({ message: "New blog post created" });
+    } else {
+        res.status(500).json({ message: "Error creating blog post" });
+    }
+});
 
 // Get a blog post
-async function getBlogPost(request, response) {
-    try {
-        const blogPost = await BlogPost.findById(request.params.blogID);
-        if (!blogPost) {
-            return response.status(404).json({ message: "Blog post not found." });
-        }
+// async function getBlogPost(request, response) {
+//     try {
+//         const blogPost = await BlogPost.findById(request.params.blogID);
+//         if (!blogPost) {
+//             return response.status(404).json({ message: "Blog post not found." });
+//         }
 
-        response.json(blogPost);
-    } catch (error) {
-        console.error("Error fetching blog post: ", error);
-        response.status(500).json({ message: error.message });
+//         response.json(blogPost);
+//     } catch (error) {
+//         console.error("Error fetching blog post: ", error);
+//         response.status(500).json({ message: error.message });
+//     }
+// }
+const getBlogPost = asyncHandler(async (req, res) => {
+    // Extract blog ID from request parameters
+    const { blogID } = req.params;
+
+    // Fetch blog post by ID
+    const blogPost = await BlogPost.findById(blogID);
+
+    // Check if blog post exists
+    if (!blogPost) {
+        return res.status(404).json({ message: `Blog ID ${blogID} not found` });
     }
-}
+
+    // Return blog post
+    res.json(blogPost);
+});
 
 // Get all blog posts
-async function getAllBlogPosts(request, response) {
-    try {
-        const blogPosts = await BlogPost.find({});
+// async function getAllBlogPosts(request, response) {
+//     try {
+//         const blogPosts = await BlogPost.find({});
 
-        response.json(blogPosts);
-    } catch (error) {
-        console.error("Error fetching blog posts: ", error);
-        response.status(500).json({ message: error.message });
+//         response.json(blogPosts);
+//     } catch (error) {
+//         console.error("Error fetching blog posts: ", error);
+//         response.status(500).json({ message: error.message });
+//     }
+// }
+const getAllBlogPosts = asyncHandler(async (req, res) => {
+    // Fetch blog posts from the database
+    const blogPosts = await BlogPost.find();
+    res.status(200).json(blogPosts);
+    // Check if blog posts exists
+    if (!blogPosts || blogPosts.length === 0) {
+        return res.status(404).json({ message: "No blog posts found" });
     }
-}
+
+    // Return blog posts
+    res.json(blogPosts);
+});
+
 
 // Update a blog post
-async function updateBlogPost(request, response) {
-    try {
-        const updatedBlogPost = await BlogPost.findByIdAndUpdate(
-            request.params.blogID,
-            request.body,
-            { new: true }
-        );
+// async function updateBlogPost(request, response) {
+//     try {
+//         const updatedBlogPost = await BlogPost.findByIdAndUpdate(
+//             request.params.blogID,
+//             request.body,
+//             { new: true }
+//         );
 
-        if (!updatedBlogPost) {
-            return response.status(404).json({ message: "Blog post not found." });
-        }
+//         if (!updatedBlogPost) {
+//             return response.status(404).json({ message: "Blog post not found." });
+//         }
 
-        response.json(updatedBlogPost);
-    } catch (error) {
-        console.error("Error updating blog post: ", error);
-        response.status(500).json({ message: error.message });
+//         response.json(updatedBlogPost);
+//     } catch (error) {
+//         console.error("Error updating blog post: ", error);
+//         response.status(500).json({ message: error.message });
+//     }
+// }
+const updateBlogPost = asyncHandler(async (req, res) => {
+    const { title, author, content, tags = [] } = req.body;
+
+    // Extract blog ID from the request parameters
+    const { blogID } = req.params;
+
+    // Confirm required fields are provided
+    if (!title || !author || !content || !tags) {
+        return res.status(400).json({ message: "Missing required fields" });
     }
-}
+
+    // Fetch blog post by ID
+    const blogPost = await BlogPost.findById(blogID).exec();
+
+    // Check if blog post exists
+    if (!blogPost) {
+        return res.status(404).json({ message: `Blog ID ${blogID} not found` });
+    }
+
+    // Check for duplicate blog post
+    const duplicate = await BlogPost.findOne({ title }).exec()
+
+    // Update blog post if no duplicate exists, or it's the same blog post
+    if (duplicate && duplicate?._id.toString() !== blogID) {
+        return res.status(409).json({ message: "Duplicate blog post" })
+    }
+
+    // Update blog post with new data
+    blogPost.title = title
+    blogPost.author = author
+    blogPost.content = content
+    blogPost.tags = tags
+    
+    // Save updated blog post
+    const updatedBlogPost = await blogPost.save()
+
+    // Success message
+    res.json({ message: `Updated ${updatedBlogPost.name}` })
+});
 
 // Delete a blog post
-async function deleteBlogPost(request, response) {
-    try {
-        const blogPost = await BlogPost.findByIdAndDelete(request.params.blogID);
-        if (!blogPost) {
-            return response.status(404).json({ message: "Blog post not found." });
-        }
+// async function deleteBlogPost(request, response) {
+//     try {
+//         const blogPost = await BlogPost.findByIdAndDelete(request.params.blogID);
+//         if (!blogPost) {
+//             return response.status(404).json({ message: "Blog post not found." });
+//         }
 
-        response.json({ message: "Blog post deleted." });
-    } catch (error) {
-        console.error("Error deleting blog post: ", error);
-        response.status(500).json({ message: error.message });
+//         response.json({ message: "Blog post deleted." });
+//     } catch (error) {
+//         console.error("Error deleting blog post: ", error);
+//         response.status(500).json({ message: error.message });
+//     }
+// }
+
+const deleteBlogPost = asyncHandler(async (req, res) => {
+    // Extract blog ID from request parameters
+    const { blogID } = req.params
+
+    // Check if blog ID is provided
+    if (!blogID) {
+        return res.status(400).json({ message: "Blog ID required" });
     }
-}
+
+    // Delete blog post
+    const blogPost = await BlogPost.findByIdAndDelete(blogID).exec();
+
+    if (!blogPost) {
+        return res.status(404).json({ message: `Blog ID ${blogID} not found` });
+    }
+
+    // Success message
+    res.json({ message: `Deleted ${blogPost.name}` });
+})
 
 // Export controller functions
 module.exports = {
