@@ -28,5 +28,7 @@ app.use("/", userRoutes);
 const blogPostRoutes = require("./routes/BlogPostRoutes.js");
 app.use("/blog", blogPostRoutes);
 
+const mealPlanRoutes = require("./routes/MealPlanRoutes.js");
+app.use("/meal-plan", mealPlanRoutes);
 
 module.exports = { app };
