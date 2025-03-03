@@ -1,11 +1,11 @@
-const { BlogPostModel } = require("../models/BlogPostModel");
+const { BlogPost } = require("../models/BlogPostModel");
 
 // Create a blog post
 async function createBlogPost(request, response) {
     try {
         const { title, author, content, tags = [] } = request.body;
 
-        const blogPost = await BlogPostModel.create({
+        const blogPost = await BlogPost.create({
             title,
             author,
             content,
@@ -22,7 +22,7 @@ async function createBlogPost(request, response) {
 // Get a blog post
 async function getBlogPost(request, response) {
     try {
-        const blogPost = await BlogPostModel.findById(request.params.blogID);
+        const blogPost = await BlogPost.findById(request.params.blogID);
         if (!blogPost) {
             return response.status(404).json({ message: "Blog post not found." });
         }
@@ -37,7 +37,7 @@ async function getBlogPost(request, response) {
 // Get all blog posts
 async function getAllBlogPosts(request, response) {
     try {
-        const blogPosts = await BlogPostModel.find({});
+        const blogPosts = await BlogPost.find({});
 
         response.json(blogPosts);
     } catch (error) {
@@ -49,7 +49,7 @@ async function getAllBlogPosts(request, response) {
 // Update a blog post
 async function updateBlogPost(request, response) {
     try {
-        const updatedBlogPost = await BlogPostModel.findByIdAndUpdate(
+        const updatedBlogPost = await BlogPost.findByIdAndUpdate(
             request.params.blogID,
             request.body,
             { new: true }
@@ -69,7 +69,7 @@ async function updateBlogPost(request, response) {
 // Delete a blog post
 async function deleteBlogPost(request, response) {
     try {
-        const blogPost = await BlogPostModel.findByIdAndDelete(request.params.blogID);
+        const blogPost = await BlogPost.findByIdAndDelete(request.params.blogID);
         if (!blogPost) {
             return response.status(404).json({ message: "Blog post not found." });
         }
