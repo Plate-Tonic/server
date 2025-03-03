@@ -14,7 +14,7 @@ const MealPlanSchema = new mongoose.Schema({
         type: [String],
         required: true
     },
-    allergens: {
+    preference: {
         type: [String],
         enum: ["vegetarian", "vegan", "gluten-free", "nut-free", "none"],
         required: true

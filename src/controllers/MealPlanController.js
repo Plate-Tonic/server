@@ -1,97 +1,133 @@
+const asyncHandler = require("express-async-handler");
+
 const { MealPlan } = require("../models/MealPlanModel");
 
 // Create meal item
-async function createMealPlan(name, imageUrl = null, description, ingredients, allergens, calories, protein, fat, carbs, response = null) {
-    try {
-        const mealPlan = await MealPlan.create({
-            name,
-            imageUrl,
-            description,
-            ingredients,
-            allergens,
-            calories,
-            protein,
-            fat,
-            carbs
-        });
+const createMealPlan = asyncHandler(async (req, res) => {
+    const { name, imageUrl, description, ingredients, preference, calories, protein, fat, carbs } = req.body;
 
-        // If 'response' is provided (for Express route), send back the response
-        if (response) {
-            response.json(mealPlan);
-        } else {
-            console.log("Meal item created: ", mealPlan);
-        }
-    } catch (error) {
-        console.error("Error creating meal item: ", error);
-
-        // If 'response' is provided (for Express route), send error
-        if (response) {
-            response.status(500).json({ message: error.message });
-        }
+    // Confirm required fields are provided
+    if (!name || !description || !ingredients || !preference || !calories || !protein || !fat || !carbs) {
+        return res.status(400).json({ message: "All fields are required" });
     }
-}
+
+    // Check for duplicate meal item
+    const duplicate = await MealPlan.findOne({ name }).exec();
+
+    if (duplicate) {
+        return res.status(409).json({ message: "Duplicate meal item" });
+    }
+
+    // Create and store new meal item
+    const mealItem = await MealPlan.create({
+        name, imageUrl, description, ingredients, preference, calories, protein, fat, carbs
+    });
+
+    // Success or error message
+    if (mealItem) {
+        res.status(201).json({ message: "New meal item created" });
+    } else {
+        res.status(500).json({ message: "Error creating meal item" });
+    }
+});
 
 // Get meal item
-async function getMealPlan(request, response) {
-    try {
-        const mealPlan = await MealPlan.findById(request.params.mealID);
-        if (!mealPlan) {
-            return response.status(404).json({ message: "Meal item not found." });
-        }
+const getMealPlan = asyncHandler(async (req, res) => {
+    // Extract meal ID from request parameters
+    const { mealID } = req.params;
 
-        response.json(mealPlan);
-    } catch (error) {
-        console.error("Error fetching meal item: ", error);
-        response.status(500).json({ message: error.message });
+    // Fetch meal item by ID
+    const mealItem = await MealPlan.findById(mealID);
+
+    // Check if meal item exists
+    if (!mealItem) {
+        return res.status(404).json({ message: `Meal ID ${mealID} not found` });
     }
-}
+
+    // Return meal item
+    res.json(mealItem);
+});
 
 // Get all meal items
-async function getAllMealPlans(request, response) {
-    try {
-        const mealPlans = await MealPlan.find({});
+const getAllMealPlans = asyncHandler(async (req, res) => {
+    // Fetch meal items from the database
+    const mealItems = await MealPlan.find();
 
-        response.json(mealPlans);
-    } catch (error) {
-        console.error("Error fetching meal items: ", error);
-        response.status(500).json({ message: error.message });
+    // Check if meal items exists
+    if (!mealItems || mealItems.length === 0) {
+        return res.status(404).json({ message: "No meal items found" });
     }
-}
+
+    // Return meal items
+    res.json(mealItems);
+});
 
 // Update meal item
-async function updateMealPlan(request, response) {
-    try {
-        const updatedMealPlan = await MealPlan.findByIdAndUpdate(
-            request.params.mealID,
-            request.body,
-            { new: true }
-        );
+const updateMealPlan = asyncHandler(async (req, res) => {
+    const { name, imageUrl, description, ingredients, preference, calories, protein, fat, carbs } = req.body;
 
-        if (!updatedMealPlan) {
-            return response.status(404).json({ message: "Meal item not found." });
-        }
+    // Extract meal ID from the request parameters
+    const { mealID } = req.params;
 
-        response.json(updatedMealPlan);
-    } catch (error) {
-        console.error("Error updating meal item: ", error);
-        response.status(500).json({ message: error.message });
+    // Confirm required fields are provided
+    if (!name || !description || !ingredients || !preference || !calories || !protein || !fat || !carbs) {
+        return res.status(400).json({ message: "Missing required fields" });
     }
-}
+
+    // Fetch meal item by ID
+    const mealItem = await MealPlan.findById(mealID).exec();
+
+    // Check if meal item exists
+    if (!mealItem) {
+        return res.status(404).json({ message: `Meal ID ${mealID} not found` });
+    }
+
+    // Check for duplicate meal item
+    const duplicate = await MealPlan.findOne({ name }).exec()
+
+    // Update meal item if no duplicate exists, or it's the same meal item
+    if (duplicate && duplicate?._id.toString() !== mealID) {
+        return res.status(409).json({ message: "Duplicate meal item" })
+    }
+
+    // Update meal item with new data
+    mealItem.name = name
+    mealItem.imageUrl = imageUrl
+    mealItem.description = description
+    mealItem.ingredients = ingredients
+    mealItem.preference = preference
+    mealItem.calories = calories
+    mealItem.protein = protein
+    mealItem.fat = fat
+    mealItem.carbs = carbs
+
+    // Save updated meal item
+    const updatedMealItem = await mealItem.save()
+
+    // Success message
+    res.json({ message: `Updated ${updatedMealItem.name}` })
+})
 
 // Delete meal item
-async function deleteMealPlan(request, response) {
-    try {
-        const mealPlan = await MealPlan.findByIdAndDelete(request.params.mealID);
-        if (!mealPlan) {
-            return response.status(404).json({ message: "Meal item not found." });
-        }
+const deleteMealPlan = asyncHandler(async (req, res) => {
+    // Extract meal ID from request parameters
+    const { mealID } = req.params
 
-        response.json({ message: "Meal item deleted." });
-    } catch (error) {
-        console.error("Error deleting meal item: ", error);
-        response.status(500).json({ message: error.message });
+    // Check if meal ID is provided
+    if (!mealID) {
+        return res.status(400).json({ message: "Meal ID required" });
     }
-}
+
+    // Delete meal item
+    const mealItem = await MealPlan.findByIdAndDelete(mealID).exec();
+
+    if (!mealItem) {
+        return res.status(404).json({ message: `Meal ID ${mealID} not found` });
+    }
+
+    // Success message
+    res.json({ message: `Deleted ${mealItem.name}` });
+})
 
 // Export controller functions
 module.exports = {
