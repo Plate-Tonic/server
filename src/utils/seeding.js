@@ -1,5 +1,5 @@
 const { dbConnect, dbDisconnect } = require("./database");
-const { createBlogPost } = require("../controllers/BlogPostController");
+const { BlogPost } = require("../models/BlogPostModel");
 const { MealPlan } = require("../models/MealPlanModel");
 
 async function seed() {
@@ -21,8 +21,13 @@ async function seed() {
         }
     ];
 
-    for (let post of blogPosts) {
-        await createBlogPost(post.title, post.author, post.content, post.tags);
+    for (let blog of blogPosts) {
+        try {
+            const blogPost = await BlogPost.create(blog);
+            console.log(`Created blog post: ${blogPost.title}`);
+        } catch (err) {
+            console.error(`Error creating blog post: ${err.message}`);
+        }
     }
 
     const mealPlans = [
