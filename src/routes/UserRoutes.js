@@ -1,5 +1,5 @@
 const express = require("express");
-const { getUser, selectUserMealPlan, updateUser, updateUserMealPlan, selectUserSubscription, updateUserSubscription, getOrderHistory } = require("../controllers/UserController");
+const { getUser, selectUserMealPlan, updateUser, updateUserMealPlan } = require("../controllers/UserController");
 
 const router = express.Router();
 

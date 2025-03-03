@@ -104,7 +104,4 @@ module.exports = {
     updateUser,
     selectUserMealPlan,
     updateUserMealPlan,
-    selectUserSubscription,
-    updateUserSubscription,
-    getOrderHistory
 };
