@@ -1,26 +1,33 @@
 const { MealPlan } = require("../models/MealPlanModel");
 
 // Create meal item
-async function createMealPlan(request, response) {
+async function createMealPlan(name, imageUrl = null, description, ingredients, allergens, calories, protein, fat, carbs, response = null) {
     try {
-        const { name, imageUrl = null, description, ingredients, allergens, calories, protein, fat, carbs } = request.body;
-
         const mealPlan = await MealPlan.create({
             name,
             imageUrl,
+            description,
+            ingredients,
+            allergens,
             calories,
             protein,
             fat,
-            carbs,
-            ingredients,
-            description,
-            allergens,
+            carbs
         });
 
-        response.json(mealPlan);
+        // If 'response' is provided (for Express route), send back the response
+        if (response) {
+            response.json(mealPlan);
+        } else {
+            console.log("Meal item created: ", mealPlan);
+        }
     } catch (error) {
         console.error("Error creating meal item: ", error);
-        response.status(500).json({ message: error.message });
+
+        // If 'response' is provided (for Express route), send error
+        if (response) {
+            response.status(500).json({ message: error.message });
+        }
     }
 }
 

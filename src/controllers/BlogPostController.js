@@ -1,10 +1,8 @@
 const { BlogPost } = require("../models/BlogPostModel");
 
 // Create a blog post
-async function createBlogPost(request, response) {
+async function createBlogPost(title, author, content, tags = [], response = null) {
     try {
-        const { title, author, content, tags = [] } = request.body;
-
         const blogPost = await BlogPost.create({
             title,
             author,
@@ -12,10 +10,19 @@ async function createBlogPost(request, response) {
             tags
         });
 
-        response.json(blogPost);
+        // If 'response' is provided (for Express route), send back the response
+        if (response) {
+            response.json(blogPost);
+        } else {
+            console.log("Blog post created: ", blogPost);
+        }
     } catch (error) {
         console.error("Error creating blog post: ", error);
-        response.status(500).json({ message: error.message });
+
+        // If 'response' is provided (for Express route), send error
+        if (response) {
+            response.status(500).json({ message: error.message });
+        }
     }
 }
 
