@@ -129,7 +129,7 @@ async function seed() {
             imageUrl: "http://example.com/tofuveggiestirfry.jpg",
             description: "A delicious plant-based stir-fry with crispy tofu and colorful vegetables in a savory sauce.",
             ingredients: ["1/2 block firm tofu (cubed)", "1 tbsp soy sauce (or tamari for gluten-free)", "1 tsp sesame oil", "1/2 cup bell pepper (sliced)", "1/2 cup broccoli florets", "1/4 cup carrots (julienned)", "1 clove garlic (minced)", "1/2 tsp ginger (grated)", "1 tbsp olive oil"],
-            preference: ["vegetarian", "vegan", "gluten-free (if using tamari)", "nut-free", "none"],
+            preference: ["vegetarian", "vegan", "gluten-free", "nut-free", "none"],
             calories: 350,
             protein: 25,
             fat: 18,
