@@ -1,4 +1,5 @@
 const asyncHandler = require("express-async-handler");
+const bcrypt = require("bcrypt")
 
 const { User } = require("../models/UserModel");
 const { MealPlan } = require("../models/MealPlanModel");
@@ -11,11 +12,11 @@ const getUser = asyncHandler(async (req, res) => {
 
     // Fetch user by ID
     const user = await User.findById(userID)
-        .populate({ path: "selectedMealPlan", model: "MealPlan" }).exec();
+        .populate({ path: "selectedMealPlan" })
 
     // Check if user exists
     if (!user) {
-        return res.status(404).json({ message: `Meal ID ${userID} not found` });
+        return res.status(404).json({ message: `User ID ${userID} not found` });
     }
 
     // Return user
@@ -26,10 +27,11 @@ const getUser = asyncHandler(async (req, res) => {
 const getAllUsers = asyncHandler(async (req, res) => {
     // Fetch users from the database
     const users = await User.find()
-        .populate({ path: "selectedMealPlan", model: "MealPlan" }).exec();
+        .select("-password")
+        .populate({ path: "selectedMealPlan", select: "name" });
 
     // Check if users exists
-    if (!users || users.length === 0) {
+    if (users.length === 0) {
         return res.status(404).json({ message: "No users found" });
     }
 
@@ -39,66 +41,62 @@ const getAllUsers = asyncHandler(async (req, res) => {
 
 // Update user profile
 const updateUser = asyncHandler(async (req, res) => {
-    const { name, email, password, isAdmin, macroTracker, selectedMealPlan } = req.body;
+    // Extract user data from request body
+    const { name, email, password, isAdmin } = req.body;
 
-    // Extract user ID from the request parameters
-    const { userID } = req.params;
-
-    // Confirm required fields are provided
-    if (!name || !email || !password || !isAdmin || !macroTracker || !selectedMealPlan) {
-        return res.status(400).json({ message: "Missing required fields" });
+    // Check at least one field is provided
+    if (!name && !email && !password && isAdmin === undefined) {
+        return res.status(400).json({ message: "No updates made" });
     }
 
-    // Fetch user by ID
-    const user = await User.findById(userID).exec();
-
-    // Check if user exists
-    if (!user) {
-        return res.status(404).json({ message: `User ID ${userID} not found` });
+    // Check if email is unique
+    if (email && email !== req.user.email) {
+        const duplicate = await User.findOne({ email })
+        if (duplicate && duplicate._id.toString() !== req.user._id) {
+            return res.status(409).json({ message: `User with ${email} already exists` });
+        }
     }
 
-    // Check for duplicate user
-    const duplicate = await User.findOne({ name }).exec()
-
-    // Update user if no duplicate exists, or it's the same user
-    if (duplicate && duplicate?._id.toString() !== userID) {
-        return res.status(409).json({ message: "Duplicate user" })
+    // Check if user is an admin when editing admin rights
+    if (isAdmin && !req.authUserData.isAdmin) {
+        return res.status(403).json({ message: "Forbidden access" });
     }
-
     // Update user with new data
-    user.name = name
-    user.email = email
-    user.password = password
-    user.isAdmin = isAdmin
-    user.macroTracker = macroTracker
-    user.selectedMealPlan = selectedMealPlan
+    if (name) req.user.name = name;
+    if (email) req.user.email = email;
+    if (password) {
+        req.user.password = await bcrypt.hash(password, 10);
+    }
+    if (req.authUserData.isAdmin) {
+        req.user.isAdmin = isAdmin;
+    }
 
     // Save updated user
-    const updatedUser = await user.save()
+    const updatedUser = await req.user.save();
 
     // Success message
     res.json({ message: `Updated profile for ${updatedUser.email}` })
 });
 
-// Delete user profile
+// Delete user profile (admin only)
 const deleteUser = asyncHandler(async (req, res) => {
     // Extract user ID from request parameters
     const { userID } = req.params
 
-    // Check if meal ID is provided
-    if (!userID) {
-        return res.status(400).json({ message: "User ID required" });
+    // Check for admin rights
+    if (!req.authUserData.isAdmin) {
+        return res.status(403).json({ message: "Forbidden access" });
     }
 
     // Delete user
-    const user = await User.findByIdAndDelete(userID).exec();
+    const user = await User.findByIdAndDelete(userID);
 
     if (!user) {
         return res.status(404).json({ message: `User ID ${userID} not found` });
     }
 
     // Success message
-    res.json({ message: `Deleted ${user.email}` });
+    res.json({ message: `Deleted user ${user.email}` });
 });
 
 // Add user's dietary preference
@@ -116,15 +114,11 @@ const addDietaryPreference = asyncHandler(async (req, res) => {
         return res.status(400).json({ message: "Invalid dietary preference" });
     }
 
-    // Add dietary preference to user (assuming you have a User model)
+    // Add user's dietary preference
     const user = await User.findByIdAndUpdate(req.user._id, { dietaryPreference }, { new: true });
 
-    // Success or error message
-    if (user) {
-        res.status(200).json({ message: "Dietary preference added" });
-    } else {
-        res.status(500).json({ message: "Error adding dietary preference" });
-    }
+    // Success message
+    res.status(200).json({ message: "Dietary preference added" });
 });
 
 // Update user's dietary preference
@@ -142,31 +136,29 @@ const updateDietaryPreference = asyncHandler(async (req, res) => {
         return res.status(400).json({ message: "Invalid dietary preference" });
     }
 
-    // Update user's dietary preference
-    const user = await User.findByIdAndUpdate(req.user._id, { dietaryPreference }, { new: true });
-
-    // Success or error message
-    if (user) {
-        res.status(200).json({ message: "Dietary preference updated successfully" });
-    } else {
-        res.status(500).json({ message: "Error updating dietary preference" });
+    // Check if user is an admin or trying to edit their own preference
+    if (req.params.userID.toString() !== req.user._id.toString() && !req.authUserData.isAdmin) {
+        return res.status(403).json({ message: "Forbidden access" });
     }
+
+    // Update user's dietary preference
+    const user = await User.findByIdAndUpdate(req.params.userID, { dietaryPreference }, { new: true });
+
+    if (!user) {
+        return res.status(404).json({ message: "User not found" });
+    }
+
+    // Success message
+    res.status(200).json({ message: "Dietary preference updated successfully" });
 });
 
 // Add user's meal plan
 const addUserMealPlan = asyncHandler(async (req, res) => {
-    const { userID } = req.params;
     const { selectedMealPlan } = req.body;
 
     // Validate input
     if (!selectedMealPlan) {
         return res.status(400).json({ message: "Meal Plan ID is required" });
-    }
-
-    // Check if the user exists
-    const user = await User.findById(userID);
-    if (!user) {
-        return res.status(404).json({ message: `User ID ${userID} not found` });
     }
 
     // Check if the meal plan exists
@@ -175,16 +167,16 @@ const addUserMealPlan = asyncHandler(async (req, res) => {
         return res.status(404).json({ message: `Meal Plan ID ${selectedMealPlan} not found` });
     }
 
-    // Add meal plan to user's profile
-    if (!user.selectedMealPlan) {
-        user.selectedMealPlan = [];
-    }
-    user.selectedMealPlan.push({
-        _id: mealPlan._id,
-        dietaryPreference: user.dietaryPreference // Use the dietary preference already added
-    });
+    // Update user's meal plan
+    const user = await User.findByIdAndUpdate(req.user._id, {
+        $set: {
+            selectedMealPlan: {
+                _id: mealPlan._id,
+                dietaryPreference: req.user.dietaryPreference
+            }
+        }
+    }, { new: true });
 
-    // Save updated user
     const updatedUser = await user.save();
 
     // Success message
@@ -196,7 +188,6 @@ const addUserMealPlan = asyncHandler(async (req, res) => {
 
 // Update user's meal plan
 const updateUserMealPlan = asyncHandler(async (req, res) => {
-    const { userID } = req.params;
     const { selectedMealPlan } = req.body;
 
     // Validate input
@@ -204,10 +195,9 @@ const updateUserMealPlan = asyncHandler(async (req, res) => {
         return res.status(400).json({ message: "Meal Plan ID is required" });
     }
 
-    // Check if the user exists
-    const user = await User.findById(userID);
-    if (!user) {
-        return res.status(404).json({ message: `User ID ${userID} not found` });
+    // Check if user is an admin or trying to update their own meal plan
+    if (req.params.userID.toString() !== req.user._id.toString() && !req.authUserData.isAdmin) {
+        return res.status(403).json({ message: "Forbidden access" });
     }
 
     // Check if the meal plan exists
@@ -217,6 +207,7 @@ const updateUserMealPlan = asyncHandler(async (req, res) => {
     }
 
     // Update user's meal plan
+    const user = await User.findById(req.user._id);
     if (!user.selectedMealPlan) {
         user.selectedMealPlan = [];
     }
@@ -253,9 +244,9 @@ const addTracker = asyncHandler(async (req, res) => {
     }
 
     // Validate activity and goal
-    const validActivities = ["sedentary", "lightly active", "moderately active", "very active", "extra active"];
-    const validGoals = ["lose weight", "maintain weight", "gain weight"];
-    if (!validActivities.includes(activity) || !validGoals.includes(goal)) {
+    const activities = ["sedentary", "lightly active", "moderately active", "very active", "extra active"];
+    const goals = ["lose weight", "maintain weight", "gain weight"];
+    if (!activities.includes(activity) || !goals.includes(goal)) {
         return res.status(400).json({ message: "Invalid activity or goal" });
     }
 
@@ -265,7 +256,7 @@ const addTracker = asyncHandler(async (req, res) => {
     const fat = calculateFat(calorie, protein);
     const carbs = calculateCarbs(calorie, protein, fat);
 
-    // Add macro tracker to user's profile
+    // Add tracker to user's profile
     const user = await User.findByIdAndUpdate(req.user._id, {
         macroTracker: {
             age,
@@ -288,7 +279,7 @@ const addTracker = asyncHandler(async (req, res) => {
     });
 });
 
-// Update macro tracker
+// Update calorie and macro tracker
 const updateTracker = asyncHandler(async (req, res) => {
     const { age, gender, height, weight, activity, goal } = req.body;
 
@@ -304,8 +295,13 @@ const updateTracker = asyncHandler(async (req, res) => {
         return res.status(400).json({ message: "Invalid activity or goal" });
     }
 
+    // Check if user is an admin or trying to update their own tracker
+    if (req.user._id.toString() !== req.params.userID && !req.authUserData.isAdmin) {
+        return res.status(403).json({ message: "Forbidden access" });
+    }
+
     // Update editable fields in user's profile
-    const user = await User.findByIdAndUpdate(req.user._id, {
+    const user = await User.findByIdAndUpdate(req.params.userID, {
         $set: {
             "macroTracker.age": age,
             "macroTracker.gender": gender,
@@ -327,6 +323,7 @@ const updateTracker = asyncHandler(async (req, res) => {
     user.macroTracker.protein = protein;
     user.macroTracker.fat = fat;
     user.macroTracker.carbs = carbs;
+
     await user.save();
 
     // Success message
