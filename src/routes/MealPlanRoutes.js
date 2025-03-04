@@ -1,6 +1,6 @@
 const express = require("express");
 const asyncHandler = require("express-async-handler");
-const { validateToken } = require("../middleware/validateToken");
+const { validateToken } = require("../middlewares/authMiddleware");
 const { getAllMealPlans, getMealPlan, createMealPlan, updateMealPlan, deleteMealPlan } = require("../controllers/MealPlanController");
 
 const router = express.Router();

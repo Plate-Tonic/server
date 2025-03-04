@@ -1,6 +1,6 @@
 const express = require("express");
 const asyncHandler = require("express-async-handler");
-const { validateToken } = require("../middleware/validateToken");
+const { validateToken } = require("../middlewares/authMiddleware");
 const { createBlogPost, getBlogPost, getAllBlogPosts, updateBlogPost, deleteBlogPost } = require("../controllers/BlogPostController");
 
 const router = express.Router();
