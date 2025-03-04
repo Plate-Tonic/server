@@ -1,27 +1,32 @@
 const express = require("express");
-const { getUser, selectUserMealPlan, updateUser, updateUserMealPlan, selectUserSubscription, updateUserSubscription, getOrderHistory } = require("../controllers/UserController");
+const asyncHandler = require("express-async-handler");
+
+const { getUser, getAllUsers, updateUser, deleteUser, addDietaryPreference, updateDietaryPreference, addUserMealPlan, updateUserMealPlan, addTracker, updateTracker } = require("../controllers/UserController");
 
 const router = express.Router();
 
 // Get a user's profile
-router.get("/profile/:userID", getUser);
+router.get("/:userID", asyncHandler(getUser));
 
-// Update user's profile information
-router.put("/profile/:userID", updateUser);
+// Get all user profiles
+router.get("/", asyncHandler(getAllUsers));
 
-// Select a meal plan for the user
-router.post("/meal-plan/:userID", selectUserMealPlan);
+// Update user's profile
+router.put("/:userID", asyncHandler(updateUser));
+
+// Delete a user profile
+router.delete("/:userID", asyncHandler(deleteUser));
+
+// Add a dietary preference for the user
+router.post("/:userID/dietary-preference", asyncHandler(addDietaryPreference));
+
+// Update dietary preference for the user
+router.post("/:userID/dietary-preference", asyncHandler(updateDietaryPreference));
+
+// Add a meal plan for the user
+router.post("/:userID/meal-plan", asyncHandler(addUserMealPlan));
 
 // Update user's meal plan
-router.put("/meal-plan/:userID", updateUserMealPlan);
-
-// Select a subscription plan for the user
-router.post("/subscription/:userID", selectUserSubscription);
-
-// Update user's subscription plan
-router.put("/subscription/:userID", updateUserSubscription);
-
-// Get user's order history
-router.get("/order-history/:userID", getOrderHistory);
+router.put("/:userID/meal-plan", asyncHandler(updateUserMealPlan));
 
 module.exports = router;

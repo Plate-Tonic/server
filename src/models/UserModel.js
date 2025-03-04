@@ -1,6 +1,11 @@
 const mongoose = require("mongoose");
+const { MealPlan } = require("./MealPlanModel");
 
 const UserSchema = new mongoose.Schema({
+    name: {
+        type: String,
+        required: true
+    },
     email: {
         type: String,
         required: true,
@@ -13,23 +18,10 @@ const UserSchema = new mongoose.Schema({
         required: true,
         minLength: 8
     },
-    admin: {
+    isAdmin: {
         type: Boolean,
         required: true,
         default: false
-    },
-    name: {
-        type: String,
-        required: true
-    },
-    address: {
-        street: { type: String },
-        suburb: { type: String },
-        state: { type: String },
-        postcode: { type: String }
-    },
-    stripeCustomerId: {
-        type: String
     },
     macroTracker: {
         age: { type: Number, required: true },
@@ -43,22 +35,11 @@ const UserSchema = new mongoose.Schema({
         fat: { type: Number, required: true },
         carbs: { type: Number, required: true }
     },
-    selectedMealPlan: {
+    selectedMealPlan: [{
         type: mongoose.Schema.Types.ObjectId,
         ref: "MealPlan",
-        dietaryRestrictions: { type: String, enum: ["vegetarian", "vegan", "gluten-free", "nut-free", "none"], default: "none" }
-    },
-    selectedSubscription: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: "Subscription",
-        deliveryFrequency: { type: String, enum: ["weekly", "bi-weekly", "monthly"], default: "monthly" }
-    },
-    orderHistory: [
-        {
-            type: mongoose.Schema.Types.ObjectId,
-            ref: "Order"
-        }
-    ]
+        dietaryPreference: { type: String, enum: ["vegetarian", "vegan", "gluten-free", "nut-free", "none"], default: "none" }
+    }]
 });
 
 const User = mongoose.model("User", UserSchema);
