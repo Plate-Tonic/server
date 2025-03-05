@@ -3,7 +3,7 @@ const bcrypt = require("bcrypt")
 
 const { User } = require("../models/UserModel");
 const { MealPlan } = require("../models/MealPlanModel");
-const { calculateTDEE, calculateProtein, calculateFat, calculateCarbs } = require("../utils/calculator")
+const { calculateCalories, calculateProtein, calculateFat, calculateCarbs } = require("../utils/calculator")
 
 // Get user profile
 const getUser = asyncHandler(async (req, res) => {
@@ -292,15 +292,55 @@ const getTracker = asyncHandler(async (req, res) => {
     res.json(user.macroTracker);
 });
 
+// Add calorie and macro tracker for non-users
+const addTrackerNonUser = asyncHandler(async (req, res) => {
+    const { age, weight, height, gender, activity, goal } = req.body;
+
+    // Confirm required fields are provided
+    if (!age || !weight || !height || !gender || !activity || !goal) {
+        return res.status(400).json({ message: "Missing required fields" });
+    }
+
+    // Validate activity and goal
+    const validActivities = [
+        "Sedentary (little or no exercise)",
+        "Lightly active (light exercise 1-3 days/week)",
+        "Moderately active (moderate exercise 3-5 days/week)",
+        "Very active (hard exercise 6-7 days/week)",
+        "Super active (very intense exercise, physical job, etc.)"
+    ];
+    const validGoals = [
+        "Lose Weight",
+        "Maintain Weight",
+        "Gain Muscle"
+    ];
+    if (!validActivities.includes(activity) || !validGoals.includes(goal)) {
+        return res.status(400).json({ message: "Invalid activity or goal" });
+    }
+
+    const calories = calculateCalories(age, gender, height, weight, activity, goal);
+    const protein = calculateProtein(weight, activity, goal);
+    const fat = calculateFat(weight, activity, goal);
+    const carbs = calculateCarbs(weight, activity, goal);
+
+    // Send back the calculated results
+    res.json({
+        calories,
+        protein,
+        fat,
+        carbs,
+    });
+});
+
 // Add calorie and macro tracker
 const addTracker = asyncHandler(async (req, res) => {
-    const { age, gender, height, weight, activity, goal } = req.body;
+    const { age, weight, height, gender, activity, goal } = req.body;
 
     // Extract user ID from the request parameters
     const { userId } = req.params;
 
     // Confirm required fields are provided
-    if (!age || !gender || !height || !weight || !activity || !goal) {
+    if (!age || !weight || !height || !gender || !activity || !goal) {
         return res.status(400).json({ message: "Missing required fields" });
     }
 
@@ -330,41 +370,42 @@ const addTracker = asyncHandler(async (req, res) => {
     }
 
     // Calculate TDEE and macros
-    const calorie = calculateTDEE(age, gender, height, weight, activity, goal);
+    const calories = calculateCalories(age, weight, height, gender, activity, goal);
     const protein = calculateProtein(weight);
-    const fat = calculateFat(calorie, protein);
-    const carbs = calculateCarbs(calorie, protein, fat);
+    const fat = calculateFat(calories, protein);
+    const carbs = calculateCarbs(calories, protein, fat);
 
     // Add tracker to user's profile
     user.macroTracker = {
         age,
-        gender,
-        height,
         weight,
+        height,
+        gender,
         activity,
         goal,
-        calorie,
+        calories,
         protein,
         fat,
         carbs
     };
 
     // Save updated user with macro tracker
-    const updatedUser = await user.save();
+    await user.save();
 
     // Success message
     res.status(200).json({
         message: "Macro tracker added successfully",
-        user: updatedUser.macroTracker
+        user: user.macroTracker
     });
+    console.log(req.body);
 });
 
 // Update calorie and macro tracker
 const updateTracker = asyncHandler(async (req, res) => {
-    const { age, gender, height, weight, activity, goal } = req.body;
+    const { age, weight, height, gender, activity, goal } = req.body;
 
     // Confirm required fields are provided
-    if (!age || !gender || !height || !weight || !activity || !goal) {
+    if (!age || !weight || !height || !gender || !activity || !goal) {
         return res.status(400).json({ message: "All fields are required" });
     }
 
@@ -406,17 +447,18 @@ const updateTracker = asyncHandler(async (req, res) => {
     user.macroTracker.goal = goal;
 
     // Recalculate calorie and macro intake
-    const calorie = calculator.calculateTDEE(user.macroTracker.age, user.macroTracker.gender, user.macroTracker.height, user.macroTracker.weight, user.macroTracker.activity, user.macroTracker.goal);
-    const protein = calculator.calculateProtein(user.macroTracker.weight);
-    const fat = calculator.calculateFat(calorie, protein);
-    const carbs = calculator.calculateCarbs(calorie, protein, fat);
+    const calories = calculateCalories(age, weight, height, gender, activity, goal);
+    const protein = calculateProtein(weight);
+    const fat = calculateFat(calories, protein);
+    const carbs = calculateCarbs(calories, protein, fat);
 
     // Update remaining fields in user's profile
-    user.macroTracker.calorie = calorie;
+    user.macroTracker.calories = calories;
     user.macroTracker.protein = protein;
     user.macroTracker.fat = fat;
     user.macroTracker.carbs = carbs;
 
+    // Save the updated user document
     await user.save();
 
     // Success message
@@ -424,6 +466,7 @@ const updateTracker = asyncHandler(async (req, res) => {
         message: "Macro tracker updated successfully",
         user: user.macroTracker
     });
+    console.log(req.body);
 });
 
 // Export controller functions
@@ -438,6 +481,7 @@ module.exports = {
     updateUserMealPlan,
     deleteUserMealPlan,
     getTracker,
+    addTrackerNonUser,
     addTracker,
     updateTracker
 };
