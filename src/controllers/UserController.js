@@ -234,6 +234,60 @@ const updateUserMealPlan = asyncHandler(async (req, res) => {
     });
 });
 
+// Delete user's meal item
+const deleteUserMealPlan = asyncHandler(async (req, res) => {
+    const { mealID, userId } = req.params;
+
+    // Check if user ID and meal ID are present
+    if (!userId || !mealID) {
+        return res.status(400).json({ message: "User ID or Meal ID is missing." });
+    }
+
+    // Check if the user is trying to delete their own meal item or if they are an admin
+    if (userId !== req.user.userId && !req.user.isAdmin) {
+        return res.status(403).json({ message: "Forbidden access" });
+    }
+
+    // Check if the meal item exists
+    const mealPlan = await MealPlan.findById(mealID);
+    if (!mealPlan) {
+        return res.status(404).json({ message: `Meal Plan ID ${mealID} not found` });
+    }
+
+    // Check if the user has the meal item
+    const user = await User.findById(userId);
+    const mealIndex = user.selectedMealPlan.findIndex(plan => plan.toString() === mealID);
+    if (mealIndex === -1) {
+        return res.status(404).json({ message: `Meal Plan ID ${mealID} not found in user's meal item` });
+    }
+
+    // Remove the meal item
+    user.selectedMealPlan.splice(mealIndex, 1);
+
+    // Save the updated user document
+    await user.save();
+
+    // Success message
+    res.status(200).json({
+        message: `Meal Plan ID ${mealID} deleted successfully from user ID ${userId}`
+    });
+});
+
+// Get calorie and macro tracker
+const getTracker = asyncHandler(async (req, res) => {
+    const user = await User.findOne({ _id: req.params.userId });
+
+    if (!user) {
+        return res.status(404).json({ message: "User not found" });
+    }
+
+    if (!user.macroTracker) {
+        return res.status(404).json({ message: "Tracker data not found" });
+    }
+
+    res.json(user.macroTracker);
+});
+
 // Add calorie and macro tracker
 const addTracker = asyncHandler(async (req, res) => {
     const { age, gender, height, weight, activity, goal } = req.body;
@@ -343,6 +397,8 @@ module.exports = {
     updateDietaryPreference,
     addUserMealPlan,
     updateUserMealPlan,
+    deleteUserMealPlan,
+    getTracker,
     addTracker,
     updateTracker
 };
