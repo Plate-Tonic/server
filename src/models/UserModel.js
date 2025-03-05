@@ -57,7 +57,7 @@ const UserSchema = new mongoose.Schema({
             ],
             required: false
         },
-        calorie: { type: Number, required: false },
+        calories: { type: Number, required: false },
         protein: { type: Number, required: false },
         fat: { type: Number, required: false },
         carbs: { type: Number, required: false }
