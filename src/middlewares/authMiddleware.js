@@ -1,15 +1,19 @@
-const jwt = require("jsonwebtoken");
+const jwt = require('jsonwebtoken');
 
-async function validateToken (request, response, next) {
-    
-    const token = request.headers.jwt;
+const validateToken = (req, res, next) => {
+    const token = req.header('Authorization')?.split(' ')[1];
+    if (!token) {
+        return res.status(401).json({ message: "Access denied. No token provided." });
+    }
 
-    console.log(token);
-
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    request.authUserData = decoded;
-    next();
-}
+    try {
+        const decoded = jwt.verify(token, process.env.JWT_SECRET);
+        req.user = decoded;
+        next();
+    } catch (error) {
+        res.status(400).json({ message: "Invalid token." });
+    }
+};
 
 module.exports = {
     validateToken
