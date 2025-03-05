@@ -1,6 +1,6 @@
 const express = require("express");
 const asyncHandler = require("express-async-handler");
-
+const { validateToken } = require("../middlewares/authMiddleware");
 const { createBlogPost, getBlogPost, getAllBlogPosts, updateBlogPost, deleteBlogPost } = require("../controllers/BlogPostController");
 
 const router = express.Router();
@@ -10,6 +10,9 @@ router.get("/", asyncHandler(getAllBlogPosts));
 
 // Get one blog post by ID
 router.get("/:blogID", asyncHandler(getBlogPost));
+
+// Apply validateToken middleware to following routes in this file
+router.use(validateToken);
 
 // Create a blog post
 router.post("/", asyncHandler(createBlogPost));

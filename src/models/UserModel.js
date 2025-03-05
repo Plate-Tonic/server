@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 const { MealPlan } = require("./MealPlanModel");
+const { securityQuestions } = require("../utils/securityQuestions");
 
 const UserSchema = new mongoose.Schema({
     name: {
@@ -22,6 +23,15 @@ const UserSchema = new mongoose.Schema({
         type: Boolean,
         required: true,
         default: false
+    },
+    securityQuestion: {
+        type: String,
+        required: true,
+        enum: securityQuestions,
+    },
+    securityAnswer: {
+        type: String,
+        required: true
     },
     macroTracker: {
         age: { type: Number, required: true },
