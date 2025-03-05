@@ -1,7 +1,7 @@
 const express = require("express");
 const asyncHandler = require("express-async-handler");
 
-const { registerUser, loginUser } = require("../controllers/AuthController");
+const { registerUser, loginUser, getSecurityQuestion, answerSecurityQuestion, resetPassword } = require("../controllers/AuthController");
 
 const router = express.Router();
 
