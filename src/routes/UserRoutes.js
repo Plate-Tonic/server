@@ -12,30 +12,30 @@ router.use(validateToken);
 router.get("/", asyncHandler(getAllUsers));
 
 // Get a user's profile
-router.get("/:userID", asyncHandler(getUser));
+router.get("/:userId", asyncHandler(getUser));
 
 // Update user's profile
-router.put("/:userID", asyncHandler(updateUser));
+router.put("/:userId", asyncHandler(updateUser));
 
 // Delete a user profile
-router.delete("/:userID", asyncHandler(deleteUser));
+router.delete("/:userId", asyncHandler(deleteUser));
 
 // Add a dietary preference for the user
-router.post("/:userID/dietary-preference", asyncHandler(addDietaryPreference));
+router.post("/:userId/dietary-preference", asyncHandler(addDietaryPreference));
 
 // Update dietary preference for the user
-router.put("/:userID/dietary-preference", asyncHandler(updateDietaryPreference));
+router.put("/:userId/dietary-preference", asyncHandler(updateDietaryPreference));
 
 // Add a meal plan for the user
-router.post("/:userID/meal-plan", asyncHandler(addUserMealPlan));
+router.post("/:userId/meal-plan", asyncHandler(addUserMealPlan));
 
 // Update user's meal plan
-router.put("/:userID/meal-plan", asyncHandler(updateUserMealPlan));
+router.put("/:userId/meal-plan", asyncHandler(updateUserMealPlan));
 
 // Add calorie and macro tracker
-router.post("/:userID/calorie-tracker", asyncHandler(addTracker));
+router.post("/:userId/calorie-tracker", asyncHandler(addTracker));
 
 // Update calorie and macro tracker
-router.put("/:userID/calorie-tracker", asyncHandler(updateTracker));
+router.put("/:userId/calorie-tracker", asyncHandler(updateTracker));
 
 module.exports = router;
