@@ -1,3 +1,5 @@
+const bcrypt = require("bcrypt");
+
 const { dbConnect, dbDisconnect } = require("./database");
 const { BlogPost } = require("../models/BlogPostModel");
 const { MealPlan } = require("../models/MealPlanModel");
@@ -152,7 +154,7 @@ async function seed() {
         {
             name: "Veronica Chung",
             email: "admin@platetonic.com",
-            password: "admintest",
+            password: bcrypt.hashSync("admintest", 10),
             isAdmin: true,
             macroTracker: {
                 age: 28,
@@ -171,7 +173,7 @@ async function seed() {
         {
             name: "Lily Walker",
             email: "lily@example.com",
-            password: "lilyuser",
+            password: bcrypt.hashSync("lilyuser", 10),
             isAdmin: false,
             macroTracker: {
                 age: 28,
@@ -190,7 +192,7 @@ async function seed() {
         {
             name: "James Patel",
             email: "james@example.com",
-            password: "jamesuser",
+            password: bcrypt.hashSync("jamesuser", 10),
             isAdmin: false,
             macroTracker: {
                 age: 37,
