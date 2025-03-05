@@ -80,14 +80,35 @@ async function seed() {
                 gender: "female",
                 height: 167,
                 weight: 50,
-                activity: "moderately active",
-                goal: "maintain weight",
+                activity: "Moderately active (moderate exercise 3-5 days/week)",
+                goal: "Maintain Weight",
                 calorie: 1926,
                 protein: 144,
                 fat: 75,
                 carbs: 169
             },
             selectedMealPlan: [mealItemIds[0]._id, mealItemIds[1]._id]
+        },
+        {
+            name: "Lily Walker",
+            email: "lily@example.com",
+            password: bcrypt.hashSync("lilyuser", 10),
+            isAdmin: false,
+            securityQuestion: "What is the name of the city where you were born?",
+            securityAnswer: bcrypt.hashSync("Sydney", 10),
+            macroTracker: {
+                age: 28,
+                gender: "female",
+                height: 160,
+                weight: 60,
+                activity: "Super active (very intense exercise, physical job, etc.)",
+                goal: "Maintain Weight",
+                calorie: 2241,
+                protein: 168,
+                fat: 87,
+                carbs: 196
+            },
+            selectedMealPlan: null
         },
         {
             name: "James Patel",
@@ -99,8 +120,8 @@ async function seed() {
                 gender: "male",
                 height: 175,
                 weight: 80,
-                activity: "sedentary",
-                goal: "lose weight",
+                activity: "Sedentary (little or no exercise)",
+                goal: "Lose Weight",
                 calorie: 2057,
                 protein: 154,
                 fat: 80,
