@@ -45,7 +45,7 @@ const loginUser = asyncHandler(async (request, response) => {
     }
 
     // Generate JWT token
-    const token = jwt.sign({ userId: user._id }, process.env.JWT_SECRET, { expiresIn: "1h" });
+    const token = jwt.sign({ userId: user._id, isAdmin: user.isAdmin }, process.env.JWT_SECRET, { expiresIn: "1h" });
 
     // Send token as response
     response.json({ message: "Login successful", token });
