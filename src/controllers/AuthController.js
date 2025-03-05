@@ -3,6 +3,7 @@ const jwt = require("jsonwebtoken");
 const asyncHandler = require("express-async-handler");
 
 const { User } = require("../models/UserModel");
+const { securityQuestions } = require("../utils/securityQuestions");
 
 // Register a new user
 const registerUser = asyncHandler(async (request, response) => {
@@ -51,8 +52,78 @@ const loginUser = asyncHandler(async (request, response) => {
     response.json({ message: "Login successful", token });
 });
 
+// Get security question for user
+const getSecurityQuestion = async (req, res) => {
+    try {
+        const { email } = req.body;
+
+        // Check if user exists
+        const user = await User.findOne({ email });
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        // Send the security question
+        res.status(200).json({ securityQuestion: user.securityQuestion });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Server error" });
+    }
+};
+
+// Answer security question
+const answerSecurityQuestion = async (req, res) => {
+    try {
+        const { email, securityAnswer } = req.body;
+
+        // Find user by email
+        const user = await User.findOne({ email });
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        // Verify security answer with the hashed answer in database
+        const isAnswerValid = await bcrypt.compare(securityAnswer, user.securityAnswer);
+        if (!isAnswerValid) {
+            return res.status(400).json({ message: "Incorrect answer" });
+        }
+
+        res.status(200).json({ message: "Answer verified, proceed to reset password" });
+    } catch (error) {
+        res.status(500).json({ message: "Server error" });
+    }
+};
+
+// Reset user password
+const resetPassword = async (req, res) => {
+    try {
+        const { email, newPassword } = req.body;
+
+        // Find user by email
+        const user = await User.findOne({ email });
+        if (!user) {
+            return res.status(404).json({ message: "User not found" });
+        }
+
+        // Hash the new password
+        const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+        // Update the user's password
+        user.password = hashedPassword;
+
+        await user.save();
+
+        res.status(200).json({ message: "Password reset successful" });
+    } catch (error) {
+        res.status(500).json({ message: "Server error" });
+    }
+};
+
 // Export controller functions
 module.exports = {
     registerUser,
-    loginUser
+    loginUser,
+    getSecurityQuestion,
+    answerSecurityQuestion,
+    resetPassword
 };

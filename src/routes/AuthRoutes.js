@@ -11,4 +11,13 @@ router.post("/register", asyncHandler(registerUser));
 // Login an existing user
 router.post("/login", asyncHandler(loginUser));
 
+// Get security question for user
+router.post("/question", asyncHandler(getSecurityQuestion));
+
+// Answer security question
+router.post("/answer", asyncHandler(answerSecurityQuestion));
+
+// Reset password
+router.post("/reset", asyncHandler(resetPassword));
+
 module.exports = router;
