@@ -24,7 +24,7 @@ router.delete("/:userID", asyncHandler(deleteUser));
 router.post("/:userID/dietary-preference", asyncHandler(addDietaryPreference));
 
 // Update dietary preference for the user
-router.post("/:userID/dietary-preference", asyncHandler(updateDietaryPreference));
+router.put("/:userID/dietary-preference", asyncHandler(updateDietaryPreference));
 
 // Add a meal plan for the user
 router.post("/:userID/meal-plan", asyncHandler(addUserMealPlan));
