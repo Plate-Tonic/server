@@ -156,6 +156,8 @@ async function seed() {
             email: "admin@platetonic.com",
             password: bcrypt.hashSync("admintest", 10),
             isAdmin: true,
+            securityQuestion: "What was the name of your first pet?",
+            securityAnswer: "Doggo",
             macroTracker: {
                 age: 28,
                 gender: "female",
@@ -175,6 +177,8 @@ async function seed() {
             email: "lily@example.com",
             password: bcrypt.hashSync("lilyuser", 10),
             isAdmin: false,
+            securityQuestion: "What is the name of the city where you were born?",
+            securityAnswer: "Sydney",
             macroTracker: {
                 age: 28,
                 gender: "female",
@@ -194,6 +198,8 @@ async function seed() {
             email: "james@example.com",
             password: bcrypt.hashSync("jamesuser", 10),
             isAdmin: false,
+            securityQuestion: "What is the name of the city where you were born?",
+            securityAnswer: "Melbourne",
             macroTracker: {
                 age: 37,
                 gender: "male",
