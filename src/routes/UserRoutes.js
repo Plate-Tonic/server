@@ -1,7 +1,7 @@
 const express = require("express");
 const asyncHandler = require("express-async-handler");
 const { validateToken } = require("../middlewares/authMiddleware");
-const { getUser, getAllUsers, updateUser, deleteUser, addDietaryPreference, updateDietaryPreference, addUserMealPlan, updateUserMealPlan, addTracker, updateTracker } = require("../controllers/UserController");
+const { getUser, getAllUsers, updateUser, deleteUser, addDietaryPreference, updateDietaryPreference, addUserMealPlan, updateUserMealPlan, deleteUserMealPlan, addTracker, updateTracker } = require("../controllers/UserController");
 
 const router = express.Router();
 
@@ -31,6 +31,9 @@ router.post("/:userId/meal-plan", asyncHandler(addUserMealPlan));
 
 // Update user's meal plan
 router.put("/:userId/meal-plan", asyncHandler(updateUserMealPlan));
+
+// Delete user's meal plan
+router.delete("/:userId/meal-plan/:mealID", asyncHandler(deleteUserMealPlan));
 
 // Add calorie and macro tracker
 router.post("/:userId/calorie-tracker", asyncHandler(addTracker));

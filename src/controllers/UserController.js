@@ -152,7 +152,7 @@ const updateDietaryPreference = asyncHandler(async (req, res) => {
     res.status(200).json({ message: "Dietary preference updated successfully" });
 });
 
-// Add user's meal plan
+// Add user's meal item
 const addUserMealPlan = asyncHandler(async (req, res) => {
     const { selectedMealPlan } = req.body;
 
@@ -161,13 +161,13 @@ const addUserMealPlan = asyncHandler(async (req, res) => {
         return res.status(400).json({ message: "Meal Plan ID is required" });
     }
 
-    // Check if the meal plan exists
+    // Check if the meal item exists
     const mealPlan = await MealPlan.findById(selectedMealPlan);
     if (!mealPlan) {
         return res.status(404).json({ message: `Meal Plan ID ${selectedMealPlan} not found` });
     }
 
-    // Update user's meal plan
+    // Update user's meal item
     const user = await User.findByIdAndUpdate(req.user._id, {
         $set: {
             selectedMealPlan: {
@@ -186,7 +186,7 @@ const addUserMealPlan = asyncHandler(async (req, res) => {
     });
 });
 
-// Update user's meal plan
+// Update user's meal item
 const updateUserMealPlan = asyncHandler(async (req, res) => {
     const { selectedMealPlan } = req.body;
 
@@ -195,18 +195,18 @@ const updateUserMealPlan = asyncHandler(async (req, res) => {
         return res.status(400).json({ message: "Meal Plan ID is required" });
     }
 
-    // Check if user is an admin or trying to update their own meal plan
+    // Check if user is an admin or trying to update their own meal item
     if (req.params.userId.toString() !== req.user._id.toString() && !req.authUserData.isAdmin) {
         return res.status(403).json({ message: "Forbidden access" });
     }
 
-    // Check if the meal plan exists
+    // Check if the meal item exists
     const mealPlan = await MealPlan.findById(selectedMealPlan);
     if (!mealPlan) {
         return res.status(404).json({ message: `Meal Plan ID ${selectedMealPlan} not found` });
     }
 
-    // Update user's meal plan
+    // Update user's meal item
     const user = await User.findById(req.user._id);
     if (!user.selectedMealPlan) {
         user.selectedMealPlan = [];
@@ -231,6 +231,45 @@ const updateUserMealPlan = asyncHandler(async (req, res) => {
     res.status(200).json({
         message: "Meal Plan updated successfully",
         updatedUser: { selectedMealPlan: updatedUser.selectedMealPlan }
+    });
+});
+
+// Delete user's meal item
+const deleteUserMealPlan = asyncHandler(async (req, res) => {
+    const { mealID, userId } = req.params;
+
+    // Check if user ID and meal ID are present
+    if (!userId || !mealID) {
+        return res.status(400).json({ message: "User ID or Meal ID is missing." });
+    }
+
+    // Check if the user is trying to delete their own meal item or if they are an admin
+    if (userId !== req.user.userId && !req.user.isAdmin) {
+        return res.status(403).json({ message: "Forbidden access" });
+    }
+
+    // Check if the meal item exists
+    const mealPlan = await MealPlan.findById(mealID);
+    if (!mealPlan) {
+        return res.status(404).json({ message: `Meal Plan ID ${mealID} not found` });
+    }
+
+    // Check if the user has the meal item
+    const user = await User.findById(userId);
+    const mealIndex = user.selectedMealPlan.findIndex(plan => plan.toString() === mealID);
+    if (mealIndex === -1) {
+        return res.status(404).json({ message: `Meal Plan ID ${mealID} not found in user's meal item` });
+    }
+
+    // Remove the meal item
+    user.selectedMealPlan.splice(mealIndex, 1);
+
+    // Save the updated user document
+    await user.save();
+
+    // Success message
+    res.status(200).json({
+        message: `Meal Plan ID ${mealID} deleted successfully from user ID ${userId}`
     });
 });
 
@@ -343,6 +382,7 @@ module.exports = {
     updateDietaryPreference,
     addUserMealPlan,
     updateUserMealPlan,
+    deleteUserMealPlan,
     addTracker,
     updateTracker
 };
