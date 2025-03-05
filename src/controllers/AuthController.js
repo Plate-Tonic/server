@@ -5,9 +5,20 @@ const asyncHandler = require("express-async-handler");
 const { User } = require("../models/UserModel");
 const { securityQuestions } = require("../utils/securityQuestions");
 
-// Register a new user
+// Get security questions
+const getSecurityQuestions = async (req, res) => {
+    try {
+        res.status(200).json({ securityQuestions });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ message: "Server error" });
+    }
+};
+
+// Register user
 const registerUser = asyncHandler(async (request, response) => {
-    const { name, email, password } = request.body;
+    console.log("Received data:", request.body);
+    const { name, email, password, securityQuestion, securityAnswer } = request.body;
 
     // Check if user already exists
     const existingUser = await User.findOne({ email });
@@ -15,13 +26,16 @@ const registerUser = asyncHandler(async (request, response) => {
         return response.status(400).json({ message: "User already exists" });
     }
 
-    // Hash password before saving
+    // Hash password and security answer before saving
     const hashedPassword = await bcrypt.hash(password, 10);
+    const hashedAnswer = await bcrypt.hash(securityAnswer, 10);
 
     const user = new User({
         name,
         email,
         password: hashedPassword,
+        securityQuestion,
+        securityAnswer: hashedAnswer,
     });
 
     await user.save();
@@ -121,6 +135,7 @@ const resetPassword = async (req, res) => {
 
 // Export controller functions
 module.exports = {
+    getSecurityQuestions,
     registerUser,
     loginUser,
     getSecurityQuestion,
