@@ -34,10 +34,10 @@ const UserSchema = new mongoose.Schema({
         required: true
     },
     macroTracker: {
-        age: { type: Number, required: true },
-        gender: { type: String, required: true },
-        height: { type: Number, required: true },
-        weight: { type: Number, required: true },
+        age: { type: Number, required: false },
+        gender: { type: String, required: false },
+        height: { type: Number, required: false },
+        weight: { type: Number, required: false },
         activity: {
             type: String,
             enum: [
@@ -46,7 +46,7 @@ const UserSchema = new mongoose.Schema({
                 "Moderately active (moderate exercise 3-5 days/week)",
                 "Very active (hard exercise 6-7 days/week)",
                 "Super active (very intense exercise, physical job, etc.)"],
-            required: true
+            required: false
         },
         goal: {
             type: String,
@@ -55,12 +55,12 @@ const UserSchema = new mongoose.Schema({
                 "Maintain Weight",
                 "Gain Muscle"
             ],
-            required: true
+            required: false
         },
-        calorie: { type: Number, required: true },
-        protein: { type: Number, required: true },
-        fat: { type: Number, required: true },
-        carbs: { type: Number, required: true }
+        calorie: { type: Number, required: false },
+        protein: { type: Number, required: false },
+        fat: { type: Number, required: false },
+        carbs: { type: Number, required: false }
     },
     selectedMealPlan: [{
         type: mongoose.Schema.Types.ObjectId,
