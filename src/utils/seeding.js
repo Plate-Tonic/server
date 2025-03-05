@@ -157,7 +157,7 @@ async function seed() {
             password: bcrypt.hashSync("admintest", 10),
             isAdmin: true,
             securityQuestion: "What was the name of your first pet?",
-            securityAnswer: "Doggo",
+            securityAnswer: bcrypt.hashSync("Doggo", 10),
             macroTracker: {
                 age: 28,
                 gender: "female",
@@ -178,7 +178,7 @@ async function seed() {
             password: bcrypt.hashSync("lilyuser", 10),
             isAdmin: false,
             securityQuestion: "What is the name of the city where you were born?",
-            securityAnswer: "Sydney",
+            securityAnswer: bcrypt.hashSync("Sydney", 10),
             macroTracker: {
                 age: 28,
                 gender: "female",
@@ -199,7 +199,7 @@ async function seed() {
             password: bcrypt.hashSync("jamesuser", 10),
             isAdmin: false,
             securityQuestion: "What is the name of the city where you were born?",
-            securityAnswer: "Melbourne",
+            securityAnswer: bcrypt.hashSync("Melbourne", 10),
             macroTracker: {
                 age: 37,
                 gender: "male",
