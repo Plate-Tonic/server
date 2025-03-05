@@ -1,9 +1,12 @@
 const express = require("express");
 const asyncHandler = require("express-async-handler");
 const { validateToken } = require("../middlewares/authMiddleware");
-const { getUser, getAllUsers, updateUser, deleteUser, addDietaryPreference, updateDietaryPreference, addUserMealPlan, updateUserMealPlan, deleteUserMealPlan, addTracker, updateTracker } = require("../controllers/UserController");
+const { getUser, getAllUsers, updateUser, deleteUser, addDietaryPreference, updateDietaryPreference, addUserMealPlan, updateUserMealPlan, deleteUserMealPlan, getTracker, addTracker, updateTracker } = require("../controllers/UserController");
 
 const router = express.Router();
+
+// Get calorie and macro tracker
+router.get("/:userId/calorie-tracker", asyncHandler(getTracker));
 
 // Apply validateToken middleware to following routes in this file
 router.use(validateToken);
