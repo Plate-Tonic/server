@@ -153,51 +153,83 @@ const updateDietaryPreference = asyncHandler(async (req, res) => {
 });
 
 // Add user's meal item
+// const addUserMealPlan = asyncHandler(async (req, res) => {
+//     const { selectedMealPlan } = req.body;
+//     const { userId } = req.params
+//     console.log('Request body:', req.body);
+//     console.log('User ID:', userId);
+//     // Validate input
+//     if (!selectedMealPlan) {
+//         return res.status(400).json({ message: "Meal ID is required" });
+//     }
+
+//     // Check if the meal item exists
+//     const mealPlan = await MealPlan.findById(selectedMealPlan);
+//     if (!mealPlan) {
+//         return res.status(404).json({ message: `Meal ID ${selectedMealPlan} not found` });
+//     }
+
+//     // Check if user is trying to update their own tracker
+//     if (req.authUserData && req.authUserData._id.toString() !== req.params.userId) {
+//         return res.status(403).json({ message: "Forbidden access" });
+//     }
+
+//     // Ensure selectedMealPlan is an array in the user document
+//     if (!Array.isArray(req.authUserData.selectedMealPlan)) {
+//         req.authUserData.selectedMealPlan = [];
+//     }
+
+//     // Check if the meal is already added
+//     const mealExists = req.authUserData.selectedMealPlan.some(meal => meal._id.toString() === selectedMealPlan);
+//     if (mealExists) {
+//         return res.status(400).json({ message: "Meal is already in your meal plan." });
+//     }
+
+//     // Add meal to user's meal item
+//     req.authUserData.selectedMealPlan.push({
+//         _id: mealPlan._id,
+//         dietaryPreference: mealPlan.dietaryPreference
+//     });
+
+//     // Save user with new meal item
+//     await req.authUserData.save();
+
+//     res.status(200).json({
+//         message: "Meal item added successfully",
+//         selectedMealPlan: req.authUserData.selectedMealPlan
+//     });
+// });
 const addUserMealPlan = asyncHandler(async (req, res) => {
-    const { selectedMealPlan } = req.body;
+    try {
+        const { selectedMealPlan } = req.body;
+        const userId = req.params.userId;
 
-    // Validate input
-    if (!selectedMealPlan) {
-        return res.status(400).json({ message: "Meal ID is required" });
+        console.log('Request body:', req.body);
+        console.log('User ID:', userId);
+
+        const user = await User.findById(userId);
+        console.log('User document before update:', user);
+
+        // Check if the meal item is already in the user's meal plan
+        const mealExists = user.selectedMealPlan.some(meal => meal._id.toString() === selectedMealPlan);
+        if (mealExists) {
+            console.log("Meal item is already in the user's meal plan");
+            return res.status(400).json({ message: 'Meal is already in your meal plan.' });
+        }
+
+        // Update the selectedMealPlan field
+        user.selectedMealPlan.push({ _id: selectedMealPlan });
+        await user.save();
+
+        console.log('User document after update:', user);
+
+        res.status(200).json({ message: 'Meal item added successfully' });
+    } catch (err) {
+        console.error(err);
+        res.status(500).json({ message: 'Error adding meal item to user\'s meal plan' });
     }
-
-    // Check if the meal item exists
-    const mealPlan = await MealPlan.findById(selectedMealPlan);
-    if (!mealPlan) {
-        return res.status(404).json({ message: `Meal ID ${selectedMealPlan} not found` });
-    }
-
-    // Find the user
-    const user = await User.findById(req.user._id);
-    if (!user) {
-        return res.status(404).json({ message: "User not found." });
-    }
-
-    // Ensure selectedMealPlan is an array
-    if (!Array.isArray(user.selectedMealPlan)) {
-        user.selectedMealPlan = [];
-    }
-
-    // Check if the meal is already added
-    const mealExists = user.selectedMealPlan.some(meal => meal._id.toString() === selectedMealPlan);
-    if (mealExists) {
-        return res.status(400).json({ message: "Meal is already in your meal plan." });
-    }
-
-    // Add meal to user's meal item
-    user.selectedMealPlan.push({
-        _id: mealPlan._id,
-        dietaryPreference: mealPlan.dietaryPreference
-    });
-
-    // Save user with new meal item
-    await user.save();
-
-    res.status(200).json({
-        message: "Meal item added successfully",
-        selectedMealPlan: user.selectedMealPlan
-    });
 });
+
 
 // Update user's meal item
 const updateUserMealPlan = asyncHandler(async (req, res) => {
