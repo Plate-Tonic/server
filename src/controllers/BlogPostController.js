@@ -52,14 +52,13 @@ const getBlogPost = asyncHandler(async (req, res) => {
 const getAllBlogPosts = asyncHandler(async (req, res) => {
     // Fetch blog posts from the database
     const blogPosts = await BlogPost.find();
-    res.status(200).json(blogPosts);
     // Check if blog posts exists
     if (!blogPosts || blogPosts.length === 0) {
         return res.status(404).json({ message: "No blog posts found" });
     }
 
     // Return blog posts
-    res.json(blogPosts);
+    res.status(200).json(blogPosts);
 });
 
 
