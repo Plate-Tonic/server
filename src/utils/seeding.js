@@ -191,7 +191,7 @@ async function seed() {
                 fat: 87,
                 carbs: 196
             },
-            selectedMealPlan: null
+            selectedMealPlan: []
         },
         {
             name: "James Patel",
@@ -212,7 +212,7 @@ async function seed() {
                 fat: 80,
                 carbs: 180
             },
-            selectedMealPlan: null
+            selectedMealPlan: []
         }
     ];
     for (let user of users) {
