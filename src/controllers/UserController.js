@@ -261,9 +261,8 @@ const deleteUserMealPlan = asyncHandler(async (req, res) => {
     }
 
     // Remove the meal from user's selectedMealPlan array
-    await User.findByIdAndUpdate(userId, {
-        $pull: { selectedMealPlan: { _id: mealId } }
-    });
+    user.selectedMealPlan = user.selectedMealPlan.filter(meal => meal._id.toString() !== mealId);
+    await user.save(); // Save updated user data
 
     // Success message
     res.status(200).json({

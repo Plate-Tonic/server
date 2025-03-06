@@ -165,7 +165,7 @@ async function seed() {
                 weight: 50,
                 activity: "Moderately active (moderate exercise 3-5 days/week)",
                 goal: "Maintain Weight",
-                calorie: 1926,
+                calories: 1926,
                 protein: 144,
                 fat: 75,
                 carbs: 169
@@ -186,7 +186,7 @@ async function seed() {
                 weight: 60,
                 activity: "Super active (very intense exercise, physical job, etc.)",
                 goal: "Maintain Weight",
-                calorie: 2241,
+                calories: 2241,
                 protein: 168,
                 fat: 87,
                 carbs: 196
@@ -207,7 +207,7 @@ async function seed() {
                 weight: 80,
                 activity: "Sedentary (little or no exercise)",
                 goal: "Lose Weight",
-                calorie: 2057,
+                calories: 2057,
                 protein: 154,
                 fat: 80,
                 carbs: 180
