@@ -315,10 +315,10 @@ const addTrackerNonUser = asyncHandler(async (req, res) => {
         return res.status(400).json({ message: "Invalid activity or goal" });
     }
 
-    const calories = calculateCalories(age, gender, height, weight, activity, goal);
-    const protein = calculateProtein(weight, activity, goal);
-    const fat = calculateFat(weight, activity, goal);
-    const carbs = calculateCarbs(weight, activity, goal);
+    const calories = calculateCalories(age, weight, height, gender, activity, goal);
+    const protein = calculateProtein(weight);
+    const fat = calculateFat(calories, protein);
+    const carbs = calculateCarbs(calories, protein, fat);
 
     // Send back the calculated results
     res.json({
