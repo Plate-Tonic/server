@@ -152,51 +152,65 @@ const updateDietaryPreference = asyncHandler(async (req, res) => {
     res.status(200).json({ message: "Dietary preference updated successfully" });
 });
 
-// Add user's meal plan
+// Add user's meal item
 const addUserMealPlan = asyncHandler(async (req, res) => {
     const { selectedMealPlan } = req.body;
 
     // Validate input
     if (!selectedMealPlan) {
-        return res.status(400).json({ message: "Meal Plan ID is required" });
+        return res.status(400).json({ message: "Meal ID is required" });
     }
 
-    // Check if the meal plan exists
+    // Check if the meal item exists
     const mealPlan = await MealPlan.findById(selectedMealPlan);
     if (!mealPlan) {
-        return res.status(404).json({ message: `Meal Plan ID ${selectedMealPlan} not found` });
+        return res.status(404).json({ message: `Meal ID ${selectedMealPlan} not found` });
     }
 
-    // Update user's meal plan
-    const user = await User.findByIdAndUpdate(req.user._id, {
-        $set: {
-            selectedMealPlan: {
-                _id: mealPlan._id,
-                dietaryPreference: req.user.dietaryPreference
-            }
-        }
-    }, { new: true });
+    // Find the user
+    const user = await User.findById(req.user._id);
+    if (!user) {
+        return res.status(404).json({ message: "User not found." });
+    }
 
-    const updatedUser = await user.save();
+    // Ensure selectedMealPlan is an array
+    if (!Array.isArray(user.selectedMealPlan)) {
+        user.selectedMealPlan = [];
+    }
 
-    // Success message
+    // Check if the meal is already added
+    const mealExists = user.selectedMealPlan.some(meal => meal._id.toString() === selectedMealPlan);
+    if (mealExists) {
+        return res.status(400).json({ message: "Meal is already in your meal plan." });
+    }
+
+    // Add meal to user's meal item
+    user.selectedMealPlan.push({
+        _id: mealPlan._id,
+        dietaryPreference: mealPlan.dietaryPreference
+    });
+
+    // Save user with new meal item
+    await user.save();
+
     res.status(200).json({
-        message: "Meal Plan added successfully",
-        updatedUser: { selectedMealPlan: updatedUser.selectedMealPlan }
+        message: "Meal item added successfully",
+        selectedMealPlan: user.selectedMealPlan
     });
 });
 
-// Update user's meal plan
+// Update user's meal item
 const updateUserMealPlan = asyncHandler(async (req, res) => {
     const { selectedMealPlan } = req.body;
+    const { userId } = req.params;
 
     // Validate input
     if (!selectedMealPlan) {
         return res.status(400).json({ message: "Meal Plan ID is required" });
     }
 
-    // Check if user is an admin or trying to update their own meal plan
-    if (req.params.userId.toString() !== req.user._id.toString() && !req.authUserData.isAdmin) {
+    // Ensure only users can delete their own meal items
+    if (userId !== req.user._id.toString()) {
         return res.status(403).json({ message: "Forbidden access" });
     }
 
@@ -236,40 +250,33 @@ const updateUserMealPlan = asyncHandler(async (req, res) => {
 
 // Delete user's meal item
 const deleteUserMealPlan = asyncHandler(async (req, res) => {
-    const { mealID, userId } = req.params;
+    const { mealId, userId } = req.params;
 
     // Check if user ID and meal ID are present
-    if (!userId || !mealID) {
+    if (!userId || !mealId) {
         return res.status(400).json({ message: "User ID or Meal ID is missing." });
     }
 
-    // Check if the user is trying to delete their own meal item or if they are an admin
-    if (userId !== req.user.userId && !req.user.isAdmin) {
+    // Check if user is trying to update their own tracker
+    if (req.authUserData && req.authUserData._id.toString() !== req.params.userId) {
         return res.status(403).json({ message: "Forbidden access" });
-    }
-
-    // Check if the meal item exists
-    const mealPlan = await MealPlan.findById(mealID);
-    if (!mealPlan) {
-        return res.status(404).json({ message: `Meal Plan ID ${mealID} not found` });
     }
 
     // Check if the user has the meal item
     const user = await User.findById(userId);
-    const mealIndex = user.selectedMealPlan.findIndex(plan => plan.toString() === mealID);
+    const mealIndex = user.selectedMealPlan.findIndex(plan => plan.toString() === mealId);
     if (mealIndex === -1) {
-        return res.status(404).json({ message: `Meal Plan ID ${mealID} not found in user's meal item` });
+        return res.status(404).json({ message: `Meal ID ${mealId} not found in user's meal item` });
     }
 
-    // Remove the meal item
-    user.selectedMealPlan.splice(mealIndex, 1);
-
-    // Save the updated user document
-    await user.save();
+    // Remove the meal from user's selectedMealPlan array
+    await User.findByIdAndUpdate(userId, {
+        $pull: { selectedMealPlan: { _id: mealId } }
+    });
 
     // Success message
     res.status(200).json({
-        message: `Meal Plan ID ${mealID} deleted successfully from user ID ${userId}`
+        message: `Meal ID ${mealId} deleted successfully from user ID ${userId}`
     });
 });
 

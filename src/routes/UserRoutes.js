@@ -36,7 +36,7 @@ router.post("/:userId/meal-plan", asyncHandler(addUserMealPlan));
 router.put("/:userId/meal-plan", asyncHandler(updateUserMealPlan));
 
 // Delete user's meal plan
-router.delete("/:userId/meal-plan/:mealID", asyncHandler(deleteUserMealPlan));
+router.delete("/:userId/meal-plan/:mealId", asyncHandler(deleteUserMealPlan));
 
 // Add calorie and macro tracker for non-users
 router.post("/calorie-tracker", asyncHandler(addTrackerNonUser));
