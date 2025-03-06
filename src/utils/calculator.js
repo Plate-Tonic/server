@@ -1,46 +1,51 @@
-const calculateCalories = (age, height, weight, gender, activity, goal) => {
-    let bmr;
+const calculateCalories = (age, weight, height, gender, activity, goal) => {
+    let calories;
 
     // Calculate Basal Metabolic Rate
     if (gender === "male") {
-        bmr = 66 + (6.2 * weight) + (12.7 * height) - (6.8 * age);
+        calories = (10 * weight) + (6.25 * height) - (5 * age) + 5;
     } else if (gender === "female") {
-        bmr = 655 + (4.35 * weight) + (4.7 * height) - (4.7 * age);
+        calories = (10 * weight) + (6.25 * height) - (5 * age) - 161;
     }
 
     // Apply activity multiplier
-    if (activity === "sedentary") {
-        bmr *= 1.2;
-    } else if (activity === "lightly active") {
-        bmr *= 1.375;
-    } else if (activity === "moderately active") {
-        bmr *= 1.55;
-    } else if (activity === "very active") {
-        bmr *= 1.725;
-    } else if (activity === "extra active") {
-        bmr *= 1.9;
+    if (activity === "Sedentary (little or no exercise)") {
+        calories *= 1.2;
+    } else if (activity === "Lightly active (light exercise 1-3 days/week)") {
+        calories *= 1.375;
+    } else if (activity === "Moderately active (moderate exercise 3-5 days/week)") {
+        calories *= 1.55;
+    } else if (activity === "Very active (hard exercise 6-7 days/week)") {
+        calories *= 1.725;
+    } else if (activity === "Super active (very intense exercise, physical job, etc.)") {
+        calories *= 1.9;
     }
 
     // Goal (weight loss, maintenance, or gain) adjustment
-    if (goal === "lose") {
-        bmr -= 500; // Calorie deficit
-    } else if (goal === "gain") {
-        bmr += 500; // Calorie surplus
+    if (goal === "weight-loss") {
+        calories -= 500; // Calorie deficit
+    } else if (goal === "muscle-gain") {
+        calories += 500; // Calorie surplus
     }
-
-    return Math.round(bmr);
+    return Math.round(calories);
 };
 
-const calculateProtein = (weight) => {
-    return Math.round(weight * 0.8);
+const calculateProtein = (calories) => {
+    let protein;
+    protein = (calories * 0.3) / 4;
+    return Math.round(protein);
 };
 
-const calculateFat = (calorie, protein) => {
-    return Math.round((calorie * 0.2) / 9);
+const calculateFat = (calories) => {
+    let fat;
+    fat = (calories * 0.35) / 9;
+    return Math.round(fat);
 };
 
-const calculateCarbs = (calorie, protein, fat) => {
-    return Math.round((calorie - (protein * 4) - (fat * 9)) / 4);
+const calculateCarbs = (calories) => {
+    let carbs;
+    carbs = (calories * 0.35) / 4;
+    return Math.round(carbs);
 };
 
 module.exports = {

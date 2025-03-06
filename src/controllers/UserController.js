@@ -316,9 +316,9 @@ const addTrackerNonUser = asyncHandler(async (req, res) => {
     }
 
     const calories = calculateCalories(age, weight, height, gender, activity, goal);
-    const protein = calculateProtein(weight);
-    const fat = calculateFat(calories, protein);
-    const carbs = calculateCarbs(calories, protein, fat);
+    const protein = calculateProtein(calories);
+    const fat = calculateFat(calories);
+    const carbs = calculateCarbs(calories);
 
     // Send back the calculated results
     res.json({
@@ -368,9 +368,9 @@ const addTracker = asyncHandler(async (req, res) => {
 
     // Calculate TDEE and macros
     const calories = calculateCalories(age, weight, height, gender, activity, goal);
-    const protein = calculateProtein(weight);
-    const fat = calculateFat(calories, protein);
-    const carbs = calculateCarbs(calories, protein, fat);
+    const protein = calculateProtein(calories);
+    const fat = calculateFat(calories);
+    const carbs = calculateCarbs(calories);
 
     // Add tracker to user's profile
     user.macroTracker = {
@@ -446,9 +446,9 @@ const updateTracker = asyncHandler(async (req, res) => {
 
     // Recalculate calorie and macro intake
     const calories = calculateCalories(age, weight, height, gender, activity, goal);
-    const protein = calculateProtein(weight);
-    const fat = calculateFat(calories, protein);
-    const carbs = calculateCarbs(calories, protein, fat);
+    const protein = calculateProtein(calories);
+    const fat = calculateFat(calories);
+    const carbs = calculateCarbs(calories);
 
     // Update remaining fields in user's profile
     user.macroTracker.calories = calories;
