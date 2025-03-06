@@ -153,52 +153,6 @@ const updateDietaryPreference = asyncHandler(async (req, res) => {
 });
 
 // Add user's meal item
-// const addUserMealPlan = asyncHandler(async (req, res) => {
-//     const { selectedMealPlan } = req.body;
-//     const { userId } = req.params
-//     console.log('Request body:', req.body);
-//     console.log('User ID:', userId);
-//     // Validate input
-//     if (!selectedMealPlan) {
-//         return res.status(400).json({ message: "Meal ID is required" });
-//     }
-
-//     // Check if the meal item exists
-//     const mealPlan = await MealPlan.findById(selectedMealPlan);
-//     if (!mealPlan) {
-//         return res.status(404).json({ message: `Meal ID ${selectedMealPlan} not found` });
-//     }
-
-//     // Check if user is trying to update their own tracker
-//     if (req.authUserData && req.authUserData._id.toString() !== req.params.userId) {
-//         return res.status(403).json({ message: "Forbidden access" });
-//     }
-
-//     // Ensure selectedMealPlan is an array in the user document
-//     if (!Array.isArray(req.authUserData.selectedMealPlan)) {
-//         req.authUserData.selectedMealPlan = [];
-//     }
-
-//     // Check if the meal is already added
-//     const mealExists = req.authUserData.selectedMealPlan.some(meal => meal._id.toString() === selectedMealPlan);
-//     if (mealExists) {
-//         return res.status(400).json({ message: "Meal is already in your meal plan." });
-//     }
-
-//     // Add meal to user's meal item
-//     req.authUserData.selectedMealPlan.push({
-//         _id: mealPlan._id,
-//         dietaryPreference: mealPlan.dietaryPreference
-//     });
-
-//     // Save user with new meal item
-//     await req.authUserData.save();
-
-//     res.status(200).json({
-//         message: "Meal item added successfully",
-//         selectedMealPlan: req.authUserData.selectedMealPlan
-//     });
-// });
 const addUserMealPlan = asyncHandler(async (req, res) => {
     try {
         const { selectedMealPlan } = req.body;
@@ -229,7 +183,6 @@ const addUserMealPlan = asyncHandler(async (req, res) => {
         res.status(500).json({ message: 'Error adding meal item to user\'s meal plan' });
     }
 });
-
 
 // Update user's meal item
 const updateUserMealPlan = asyncHandler(async (req, res) => {
