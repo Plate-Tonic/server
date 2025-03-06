@@ -43,39 +43,45 @@ const getAllUsers = asyncHandler(async (req, res) => {
 const updateUser = asyncHandler(async (req, res) => {
     // Extract user data from request body
     const { name, email, password, isAdmin } = req.body;
+    const { userId } = req.params;
 
-    // Check at least one field is provided
+    // Ensure only users can update their own profile
+    if (userId !== req.user._id.toString()) {
+        return res.status(403).json({ message: "Forbidden access" });
+    }
+
+    // No updates provided
     if (!name && !email && !password && isAdmin === undefined) {
         return res.status(400).json({ message: "No updates made" });
     }
 
-    // Check if email is unique
-    if (email && email !== req.user.email) {
-        const duplicate = await User.findOne({ email })
-        if (duplicate && duplicate._id.toString() !== req.user._id) {
-            return res.status(409).json({ message: `User with ${email} already exists` });
-        }
+    // Update password if only password is provided
+    if (password && !name && !email && isAdmin === undefined) {
+        req.user.password = await bcrypt.hash(password, 10);
+        await req.user.save();
+        return res.json({ message: `Updated password for ${req.user.email}` });
     }
 
-    // Check if user is an admin when editing admin rights
-    if (isAdmin && !req.authUserData.isAdmin) {
-        return res.status(403).json({ message: "Forbidden access" });
-    }
-    // Update user with new data
+    // Update name
     if (name) req.user.name = name;
-    if (email) req.user.email = email;
-    if (password) {
-        req.user.password = await bcrypt.hash(password, 10);
+
+    // Update email with uniqueness check
+    if (email && email !== req.user.email) {
+        const emailExists = await User.findOne({ email });
+        if (emailExists && emailExists._id.toString() !== req.user._id.toString()) {
+            return res.status(409).json({ message: `User with email ${email} already exists` });
+        }
+        req.user.email = email;
     }
-    if (req.authUserData.isAdmin) {
+
+    // Admin access (admin only)
+    if (req.authUserData.isAdmin && isAdmin !== undefined) {
         req.user.isAdmin = isAdmin;
     }
 
-    // Save updated user
+    // Save updated user data
     const updatedUser = await req.user.save();
-
-    // Success message
-    res.json({ message: `Updated profile for ${updatedUser.email}` })
+    res.json({ message: `Updated profile for ${updatedUser.email}` });
 });
 
 // Delete user profile (admin only)
@@ -194,7 +200,7 @@ const updateUserMealPlan = asyncHandler(async (req, res) => {
         return res.status(400).json({ message: "Meal Plan ID is required" });
     }
 
-    // Ensure only users can delete their own meal items
+    // Ensure only users can update their own meal items
     if (userId !== req.user._id.toString()) {
         return res.status(403).json({ message: "Forbidden access" });
     }
