@@ -1,7 +1,7 @@
 const express = require("express");
 const asyncHandler = require("express-async-handler");
 const { validateToken } = require("../middlewares/authMiddleware");
-const { getUser, getAllUsers, updateUser, deleteUser, addDietaryPreference, updateDietaryPreference, addUserMealPlan, updateUserMealPlan, deleteUserMealPlan, getTracker, addTracker, updateTracker } = require("../controllers/UserController");
+const { getUser, getAllUsers, updateUser, deleteUser, addDietaryPreference, updateDietaryPreference, addUserMealPlan, updateUserMealPlan, deleteUserMealPlan, getTracker, addTrackerNonUser, addTracker, updateTracker } = require("../controllers/UserController");
 
 const router = express.Router();
 
@@ -36,12 +36,15 @@ router.post("/:userId/meal-plan", asyncHandler(addUserMealPlan));
 router.put("/:userId/meal-plan", asyncHandler(updateUserMealPlan));
 
 // Delete user's meal plan
-router.delete("/:userId/meal-plan/:mealID", asyncHandler(deleteUserMealPlan));
+router.delete("/:userId/meal-plan/:mealId", asyncHandler(deleteUserMealPlan));
 
-// Add calorie and macro tracker
+// Add calorie and macro tracker for non-users
+router.post("/calorie-tracker", asyncHandler(addTrackerNonUser));
+
+// Add calorie and macro tracker for the user
 router.post("/:userId/calorie-tracker", asyncHandler(addTracker));
 
-// Update calorie and macro tracker
+// Update calorie and macro tracker for the user
 router.put("/:userId/calorie-tracker", asyncHandler(updateTracker));
 
 module.exports = router;
