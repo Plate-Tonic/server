@@ -426,10 +426,11 @@ const updateTracker = asyncHandler(async (req, res) => {
         return res.status(400).json({ message: "Invalid activity or goal" });
     }
 
-    // Check if user is an admin or trying to update their own tracker
-    if (req.user._id.toString() !== req.params.userId && !req.authUserData.isAdmin) {
+    // Check if user is trying to update their own tracker
+    if (req.authUserData && req.authUserData._id.toString() !== req.params.userId) {
         return res.status(403).json({ message: "Forbidden access" });
     }
+
     // Fetch user by user ID
     const user = await User.findById(req.params.userId).exec();
 

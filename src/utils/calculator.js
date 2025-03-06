@@ -1,4 +1,4 @@
-const calculateCalories = (age, gender, height, weight, activity, goal) => {
+const calculateCalories = (age, height, weight, gender, activity, goal) => {
     let bmr;
 
     // Calculate Basal Metabolic Rate
@@ -28,19 +28,19 @@ const calculateCalories = (age, gender, height, weight, activity, goal) => {
         bmr += 500; // Calorie surplus
     }
 
-    return bmr;
+    return Math.round(bmr);
 };
 
 const calculateProtein = (weight) => {
-    return weight * 0.8;
+    return Math.round(weight * 0.8);
 };
 
 const calculateFat = (calorie, protein) => {
-    return (calorie * 0.2) / 9;
+    return Math.round((calorie * 0.2) / 9);
 };
 
 const calculateCarbs = (calorie, protein, fat) => {
-    return (calorie - (protein * 4) - (fat * 9)) / 4;
+    return Math.round((calorie - (protein * 4) - (fat * 9)) / 4);
 };
 
 module.exports = {
