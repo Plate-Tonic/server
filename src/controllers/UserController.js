@@ -39,6 +39,7 @@ const getAllUsers = asyncHandler(async (req, res) => {
     res.json(users);
 });
 
+// Update user profile
 const updateUser = asyncHandler(async (req, res) => {
     // Extract user data from request body
     const { name, email, password, newPassword, isAdmin } = req.body;
@@ -54,6 +55,24 @@ const updateUser = asyncHandler(async (req, res) => {
     // No updates provided
     if (!name && !email && !password && !newPassword && isAdmin === undefined) {
         return res.status(400).json({ message: "No updates made" });
+    }
+    // Update name
+    if (name) {
+        user.name = name;
+        await user.save();
+        return res.status(200).json({ success: true, message: "Name updated successfully" });
+    };
+
+    // Update email
+    if (email && email !== user.email) {
+        const emailExists = await User.findOne({ email });
+        if (emailExists && emailExists._id.toString() !== user._id.toString()) {
+            return res.status(409).json({ message: `User with email ${email} already exists` });
+        }
+        user.email = email;
+
+        await user.save();
+        res.json({ message: "Email updated successfully" });
     }
 
     // Update password
@@ -71,24 +90,14 @@ const updateUser = asyncHandler(async (req, res) => {
         return res.status(200).json({ success: true, message: "Password updated successfully" });
     }
 
-    // Update other fields if provided
-    if (name) user.name = name;
-    if (email && email !== user.email) {
-        const emailExists = await User.findOne({ email });
-        if (emailExists && emailExists._id.toString() !== user._id.toString()) {
-            return res.status(409).json({ message: `User with email ${email} already exists` });
-        }
-        user.email = email;
-    }
-
-    // Admin access (admin only)
-    if (req.user.isAdmin && isAdmin !== undefined) {
+    // Update admin rights (admin only)
+    if (req.authUserData.isAdmin && isAdmin) {
         user.isAdmin = isAdmin;
+        await user.save();
+
+        return res.status(200).json({ success: true, message: "Admin rights updated successfully" });
     }
 
-    // Save updated user data
-    const updatedUser = await user.save();
-    res.json({ message: `Updated profile for ${updatedUser.email}` });
 });
 
 // Delete user profile (admin only)
