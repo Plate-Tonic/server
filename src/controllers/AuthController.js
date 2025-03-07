@@ -18,7 +18,7 @@ const getSecurityQuestions = async (req, res) => {
 // Register user
 const registerUser = asyncHandler(async (request, response) => {
     console.log("Received data:", request.body);
-    const { name, email, password, securityQuestion, securityAnswer } = request.body;
+    const { name, email, password, securityQuestion, securityAnswer, macroTracker } = request.body;
 
     // Check if user already exists
     const existingUser = await User.findOne({ email });
@@ -36,6 +36,7 @@ const registerUser = asyncHandler(async (request, response) => {
         password: hashedPassword,
         securityQuestion,
         securityAnswer: hashedAnswer,
+        macroTracker: macroTracker || {}
     });
 
     await user.save();
