@@ -39,48 +39,55 @@ const getAllUsers = asyncHandler(async (req, res) => {
     res.json(users);
 });
 
-// Update user profile
 const updateUser = asyncHandler(async (req, res) => {
     // Extract user data from request body
-    const { name, email, password, isAdmin } = req.body;
+    const { name, email, password, newPassword, isAdmin } = req.body;
     const { userId } = req.params;
 
-    // Ensure only users can update their own profile
-    if (userId !== req.user._id.toString()) {
+    const user = await User.findById(userId);
+
+    // Check if user is trying to update their own tracker
+    if (req.authUserData && req.authUserData._id.toString() !== req.params.userId) {
         return res.status(403).json({ message: "Forbidden access" });
     }
 
     // No updates provided
-    if (!name && !email && !password && isAdmin === undefined) {
+    if (!name && !email && !password && !newPassword && isAdmin === undefined) {
         return res.status(400).json({ message: "No updates made" });
     }
 
-    // Update password if only password is provided
-    if (password && !name && !email && isAdmin === undefined) {
-        req.user.password = await bcrypt.hash(password, 10);
-        await req.user.save();
-        return res.json({ message: `Updated password for ${req.user.email}` });
+    // Update password
+    if (password) {
+        const isMatch = await bcrypt.compare(password, user.password);
+        if (!isMatch) {
+            return res.status(400).json({ message: "Incorrect current password" });
+        }
+
+        // Hash the new password and save
+        const hashedPassword = await bcrypt.hash(newPassword, 10);
+        user.password = hashedPassword;
+        await user.save();
+
+        return res.status(200).json({ success: true, message: "Password updated successfully" });
     }
 
-    // Update name
-    if (name) req.user.name = name;
-
-    // Update email with uniqueness check
-    if (email && email !== req.user.email) {
+    // Update other fields if provided
+    if (name) user.name = name;
+    if (email && email !== user.email) {
         const emailExists = await User.findOne({ email });
-        if (emailExists && emailExists._id.toString() !== req.user._id.toString()) {
+        if (emailExists && emailExists._id.toString() !== user._id.toString()) {
             return res.status(409).json({ message: `User with email ${email} already exists` });
         }
-        req.user.email = email;
+        user.email = email;
     }
 
     // Admin access (admin only)
-    if (req.authUserData.isAdmin && isAdmin !== undefined) {
-        req.user.isAdmin = isAdmin;
+    if (req.user.isAdmin && isAdmin !== undefined) {
+        user.isAdmin = isAdmin;
     }
 
     // Save updated user data
-    const updatedUser = await req.user.save();
+    const updatedUser = await user.save();
     res.json({ message: `Updated profile for ${updatedUser.email}` });
 });
 
@@ -316,9 +323,9 @@ const addTrackerNonUser = asyncHandler(async (req, res) => {
     }
 
     const calories = calculateCalories(age, weight, height, gender, activity, goal);
-    const protein = calculateProtein(weight);
-    const fat = calculateFat(calories, protein);
-    const carbs = calculateCarbs(calories, protein, fat);
+    const protein = calculateProtein(calories);
+    const fat = calculateFat(calories);
+    const carbs = calculateCarbs(calories);
 
     // Send back the calculated results
     res.json({
@@ -368,9 +375,9 @@ const addTracker = asyncHandler(async (req, res) => {
 
     // Calculate TDEE and macros
     const calories = calculateCalories(age, weight, height, gender, activity, goal);
-    const protein = calculateProtein(weight);
-    const fat = calculateFat(calories, protein);
-    const carbs = calculateCarbs(calories, protein, fat);
+    const protein = calculateProtein(calories);
+    const fat = calculateFat(calories);
+    const carbs = calculateCarbs(calories);
 
     // Add tracker to user's profile
     user.macroTracker = {
@@ -446,9 +453,9 @@ const updateTracker = asyncHandler(async (req, res) => {
 
     // Recalculate calorie and macro intake
     const calories = calculateCalories(age, weight, height, gender, activity, goal);
-    const protein = calculateProtein(weight);
-    const fat = calculateFat(calories, protein);
-    const carbs = calculateCarbs(calories, protein, fat);
+    const protein = calculateProtein(calories);
+    const fat = calculateFat(calories);
+    const carbs = calculateCarbs(calories);
 
     // Update remaining fields in user's profile
     user.macroTracker.calories = calories;
