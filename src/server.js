@@ -8,7 +8,7 @@ app.use(express.json());
 app.use(helmet());
 
 let corsOptions = {
-    origin: ["http://localhost:3000", "http://localhost:5173", "http://127.0.0.1:5173", "https://reactapp.com"],
+    origin: ["http://localhost:3000", "http://localhost:5173", "http://127.0.0.1:5173", "https://platetonic.netlify.app"],
     methods: ["GET", "POST", "PUT", "DELETE"]
 };
 app.use(cors(corsOptions));
