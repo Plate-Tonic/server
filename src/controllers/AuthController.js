@@ -36,7 +36,7 @@ const registerUser = asyncHandler(async (request, response) => {
         password: hashedPassword,
         securityQuestion,
         securityAnswer: hashedAnswer,
-        macroTracker: macroTracker || {}
+        macroTracker: macroTracker || {} // Gets Data from Local Storage 
     });
 
     await user.save();
