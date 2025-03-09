@@ -35,8 +35,9 @@ const MealPlanSchema = new mongoose.Schema({
         type: Number,
         required: true
     },
-    imageUrl: {
-        type: String
+    mealImage: {
+        type: String,
+        required: true
     }
 });
 

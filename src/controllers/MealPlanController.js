@@ -4,23 +4,30 @@ const { MealPlan } = require("../models/MealPlanModel");
 
 // Create meal item
 const createMealPlan = asyncHandler(async (req, res) => {
-    const { name, imageUrl, description, ingredients, preference, calories, protein, fat, carbs } = req.body;
+    const { name, description, ingredients, preference, calories, protein, fat, carbs } = req.body;
 
     // Confirm required fields are provided
     if (!name || !description || !ingredients || !preference || !calories || !protein || !fat || !carbs) {
         return res.status(400).json({ message: "All fields are required" });
     }
 
+    // Check if a file was uploaded
+    if (!req.file) {
+        return res.status(400).json({ message: "Meal image is required" });
+    }
+
+    const mealImage = req.file.path; // Multer stores the file path in req.file
+
     // Check for duplicate meal item
     const duplicate = await MealPlan.findOne({ name }).exec();
 
     if (duplicate) {
-        return res.status(409).json({ message: "Duplicate meal item" });
+        return res.status(409).json({ message: `Meal item ${name} already exists` });
     }
 
     // Create and store new meal item
     const mealItem = await MealPlan.create({
-        name, imageUrl, description, ingredients, preference, calories, protein, fat, carbs
+        name, description, ingredients, preference, calories, protein, fat, carbs, mealImage
     });
 
     // Success or error message
@@ -64,49 +71,43 @@ const getAllMealPlans = asyncHandler(async (req, res) => {
 
 // Update meal item
 const updateMealPlan = asyncHandler(async (req, res) => {
-    const { name, imageUrl, description, ingredients, preference, calories, protein, fat, carbs } = req.body;
-
-    // Extract meal ID from the request parameters
+    const { name, description, ingredients, preference, calories, protein, fat, carbs } = req.body;
     const { mealID } = req.params;
+
+    // Check if a file was uploaded
+    const mealImage = req.file ? req.file.path : null;
 
     // Confirm required fields are provided
     if (!name || !description || !ingredients || !preference || !calories || !protein || !fat || !carbs) {
         return res.status(400).json({ message: "Missing required fields" });
     }
 
-    // Fetch meal item by ID
-    const mealItem = await MealPlan.findById(mealID).exec();
-
-    // Check if meal item exists
-    if (!mealItem) {
-        return res.status(404).json({ message: `Meal ID ${mealID} not found` });
-    }
-
     // Check for duplicate meal item
     const duplicate = await MealPlan.findOne({ name }).exec()
 
-    // Update meal item if no duplicate exists, or it's the same meal item
     if (duplicate && duplicate?._id.toString() !== mealID) {
-        return res.status(409).json({ message: "Duplicate meal item" })
+        return res.status(409).json({ message: `Meal item ${name} already exists` })
     }
 
-    // Update meal item with new data
-    mealItem.name = name
-    mealItem.imageUrl = imageUrl
-    mealItem.description = description
-    mealItem.ingredients = ingredients
-    mealItem.preference = preference
-    mealItem.calories = calories
-    mealItem.protein = protein
-    mealItem.fat = fat
-    mealItem.carbs = carbs
+    // Prepare update data
+    const updateData = {
+        name, description, ingredients, preference, calories, protein, fat, carbs, mealImage: mealImage || undefined,
+    };
 
-    // Save updated meal item
-    const updatedMealItem = await mealItem.save()
+    // Update the meal item
+    const updatedMealItem = await MealPlan.findByIdAndUpdate(mealID, updateData, {
+        new: true, // Return the updated document
+        runValidators: true, // Ensure validation runs on update
+    });
 
-    // Success message
-    res.json({ message: `Updated ${updatedMealItem.name}` })
-})
+    // Check if the item was found and updated
+    if (!updatedMealItem) {
+        return res.status(404).json({ message: `Meal ID ${mealID} not found` });
+    }
+
+    // Return the updated meal item
+    res.json({ message: `Updated ${updatedMealItem.name}`, updatedMealItem });
+});
 
 // Delete meal item
 const deleteMealPlan = asyncHandler(async (req, res) => {
