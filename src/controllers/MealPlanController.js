@@ -32,7 +32,7 @@ const getMealPlan = asyncHandler(async (req, res) => {
 
 // Create meal item
 const createMealPlan = asyncHandler(async (req, res) => {
-    const { name, description, ingredients, preference, calories, protein, fat, carbs } = req.body;
+    let { name, description, ingredients, preference, calories, protein, fat, carbs } = req.body;
 
     // Admin check
     if (!req.authUserData?.isAdmin) {
@@ -47,8 +47,14 @@ const createMealPlan = asyncHandler(async (req, res) => {
         return res.status(400).json({ message: "Meal image is required" });
     }
 
+    const mealImage = `/uploads/${req.file.filename}`;
+  
     // Get the filename of the uploaded file
     const mealImageName = req.file.filename;
+
+    if (!Array.isArray(preference)) {
+        preference = preference.split(",").map((item) => item.trim()); // Ensure array format
+    }
 
     // Check for duplicate meal item
     const duplicate = await MealPlan.findOne({ name }).exec();
@@ -61,7 +67,7 @@ const createMealPlan = asyncHandler(async (req, res) => {
     const mealItem = await MealPlan.create({
         name,
         description,
-        ingredients,
+        ingredients: ingredients.split(",").map((item) => item.trim()), 
         preference,
         calories,
         protein,
