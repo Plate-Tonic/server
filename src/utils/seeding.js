@@ -75,69 +75,69 @@ async function seed() {
     const mealItems = [
         {
             name: "Egg & Cheese Wrap",
-            imageUrl: "http://example.com/eggcheesewrap.jpg",
             description: "A delicious wrap filled with scrambled eggs and melted cheese, perfect for a quick meal.",
             ingredients: ["2 eggs", "1 whole wheat tortilla (8-inch)", "1 slice of cheddar cheese", "1 tsp olive oil", "Salt and pepper", "Optional: salsa, spinach, avocado"],
             preference: ["vegetarian", "nut-free", "none"],
             calories: 350,
             protein: 22,
             fat: 21,
-            carbs: 20
+            carbs: 20,
+            mealImage: "http://example.com/eggcheesewrap.jpg"
         },
         {
             name: "Grilled Chicken Salad",
-            imageUrl: "",
             description: "A refreshing and nutritious salad topped with grilled chicken breast, fresh vegetables, and a light balsamic vinaigrette.",
             ingredients: ["1 boneless, skinless chicken breast", "2 cups mixed salad greens", "1/2 cucumber", "1/2 bell pepper", "1/4 red onion", "1/4 avocado", "2 tbsp olive oil", "Salt and pepper", "1 tbsp balsamic vinaigrette"],
             preference: ["gluten-free", "nut-free", "none"],
             calories: 300,
             protein: 35,
             fat: 18,
-            carbs: 10
+            carbs: 10,
+            mealImage: "http://example.com/grilledchickensalad.jpg"
         },
         {
             name: "Avocado Toast with Cherry Tomatoes",
-            imageUrl: "http://example.com/avocadotoast.jpg",
             description: "A nutritious and delicious avocado toast topped with cherry tomatoes and a sprinkle of seasonings.",
             ingredients: ["1 slice whole-grain bread", "1/2 ripe avocado", "5 cherry tomatoes (halved)", "1/2 tsp olive oil", "Salt and pepper", "Optional: red pepper flakes, lemon juice"],
             preference: ["vegetarian", "vegan", "nut-free", "none"],
             calories: 250,
             protein: 6,
             fat: 15,
-            carbs: 25
+            carbs: 25,
+            mealImage: "http://example.com/avocadotoast.jpg"
         },
         {
             name: "Quinoa & Black Bean Bowl",
-            imageUrl: "http://example.com/quinoabowl.jpg",
             description: "A protein-packed quinoa bowl with black beans, colorful veggies, and a zesty lime dressing.",
             ingredients: ["1/2 cup cooked quinoa", "1/2 cup black beans (cooked or canned, rinsed)", "1/4 cup cherry tomatoes (halved)", "1/4 cup corn", "1 tbsp olive oil", "1 tbsp lime juice", "1/2 tsp cumin", "Salt and pepper to taste"],
             preference: ["vegetarian", "vegan", "gluten-free", "nut-free", "none"],
             calories: 350,
             protein: 14,
             fat: 10,
-            carbs: 50
+            carbs: 50,
+            mealImage: "http://example.com/quinoabowl.jpg"
         },
         {
             name: "Garlic Lemon Salmon with Roasted Vegetables",
-            imageUrl: "http://example.com/garliclemonsalmon.jpg",
             description: "A flavorful and nutritious baked salmon dish with roasted vegetables, perfect for a healthy dinner.",
             ingredients: ["1 salmon fillet (4-6 oz)", "1 tbsp olive oil", "1 tbsp lemon juice", "1 clove garlic (minced)", "1/2 tsp dried oregano", "Salt and pepper to taste", "1/2 cup broccoli florets", "1/2 cup bell pepper (sliced)", "1/2 cup zucchini (sliced)"],
             preference: ["gluten-free", "nut-free", "none"],
             calories: 420,
             protein: 40,
             fat: 22,
-            carbs: 15
+            carbs: 15,
+            mealImage: "http://example.com/garliclemonsalmon.jpg"
         },
         {
             name: "Stir-Fried Tofu & Vegetables",
-            imageUrl: "http://example.com/tofuveggiestirfry.jpg",
             description: "A delicious plant-based stir-fry with crispy tofu and colorful vegetables in a savory sauce.",
             ingredients: ["1/2 block firm tofu (cubed)", "1 tbsp soy sauce (or tamari for gluten-free)", "1 tsp sesame oil", "1/2 cup bell pepper (sliced)", "1/2 cup broccoli florets", "1/4 cup carrots (julienned)", "1 clove garlic (minced)", "1/2 tsp ginger (grated)", "1 tbsp olive oil"],
             preference: ["vegetarian", "vegan", "gluten-free", "nut-free", "none"],
             calories: 350,
             protein: 25,
             fat: 18,
-            carbs: 30
+            carbs: 30,
+            mealImage: "http://example.com/tofuveggiestirfry.jpg"
         }
     ];
     const mealItemIds = [];
