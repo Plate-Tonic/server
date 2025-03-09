@@ -1,5 +1,6 @@
 const mongoose = require("mongoose");
 
+// Schema for meal plans
 const MealPlanSchema = new mongoose.Schema({
     name: {
         type: String,
@@ -41,6 +42,7 @@ const MealPlanSchema = new mongoose.Schema({
     }
 });
 
+// Model for meal plans
 const MealPlan = mongoose.model("MealPlan", MealPlanSchema);
 
 module.exports = {

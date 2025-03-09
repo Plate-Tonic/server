@@ -8,7 +8,7 @@ const calculateCalories = (age, weight, height, gender, activity, goal) => {
         calories = (10 * weight) + (6.25 * height) - (5 * age) - 161;
     }
 
-    // Apply activity multiplier
+    // Activity multiplier
     if (activity === "Sedentary (little or no exercise)") {
         calories *= 1.2;
     } else if (activity === "Lightly active (light exercise 1-3 days/week)") {
@@ -21,7 +21,7 @@ const calculateCalories = (age, weight, height, gender, activity, goal) => {
         calories *= 1.9;
     }
 
-    // Goal (weight loss, maintenance, or gain) adjustment
+    // Goal adjustment
     if (goal === "weight-loss") {
         calories -= 500; // Calorie deficit
     } else if (goal === "muscle-gain") {
@@ -32,19 +32,19 @@ const calculateCalories = (age, weight, height, gender, activity, goal) => {
 
 const calculateProtein = (calories) => {
     let protein;
-    protein = (calories * 0.3) / 4;
+    protein = (calories * 0.3) / 4; // 30% of total calories
     return Math.round(protein);
 };
 
 const calculateFat = (calories) => {
     let fat;
-    fat = (calories * 0.35) / 9;
+    fat = (calories * 0.35) / 9; // 35% of total calories
     return Math.round(fat);
 };
 
 const calculateCarbs = (calories) => {
     let carbs;
-    carbs = (calories * 0.35) / 4;
+    carbs = (calories * 0.35) / 4; // 35% of total calories
     return Math.round(carbs);
 };
 

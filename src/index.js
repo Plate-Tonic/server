@@ -1,8 +1,8 @@
+require("dotenv").config();
 const { app } = require("./server.js");
 const { dbConnect } = require("./utils/database");
 
-require("dotenv").config();
-
+// Start the server
 const PORT = process.env.PORT || 8008;
 
 app.listen(PORT, async() => {
