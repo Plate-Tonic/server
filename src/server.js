@@ -11,7 +11,6 @@ let corsOptions = {
     origin: ["http://localhost:3000", "http://localhost:5173", "http://127.0.0.1:5173", "https://platetonic.netlify.app"],
     methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
     allowedHeaders: ["Content-Type", "Authorization"]  // Allow specific headers
-
 };
 
 // Set up middleware
@@ -19,15 +18,15 @@ app.use(express.json());
 app.use(cors(corsOptions));
 app.use(helmet());
 
-
-// Serve static files from /uploads folder
-app.use("/uploads", express.static(path.join(__dirname, "../uploads")));
-
+// Test route
 app.get("/", (request, response) => {
     response.json({
         message: "Test!"
     });
 });
+
+// Serve static files from /uploads folder
+app.use("/uploads", express.static(path.join(__dirname, "../uploads")));
 
 // Auth routes
 const authRoutes = require("./routes/AuthRoutes.js");

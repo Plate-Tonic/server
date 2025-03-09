@@ -47,13 +47,12 @@ const createMealPlan = asyncHandler(async (req, res) => {
         return res.status(400).json({ message: "Meal image is required" });
     }
 
+    // Get the path of the uploaded file
     const mealImage = `/uploads/${req.file.filename}`;
-  
-    // Get the filename of the uploaded file
-    const mealImageName = req.file.filename;
 
+    // Check if preference is an array
     if (!Array.isArray(preference)) {
-        preference = preference.split(",").map((item) => item.trim()); // Ensure array format
+        preference = preference.split(",").map((item) => item.trim());
     }
 
     // Check for duplicate meal item
@@ -73,7 +72,7 @@ const createMealPlan = asyncHandler(async (req, res) => {
         protein,
         fat,
         carbs,
-        mealImage: mealImageName,
+        mealImage
     });
 
     // Success message
