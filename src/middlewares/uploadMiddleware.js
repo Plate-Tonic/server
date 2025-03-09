@@ -10,4 +10,9 @@ const storage = multer.diskStorage({
         cb(null, `${Date.now()}-${file.originalname}`);
     }
 });
-const upload = multer({ storage: storage });
+const uploadImage = multer({ storage: storage });
+
+// Exporting middleware
+module.exports = {
+    uploadImage
+};
