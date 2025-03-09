@@ -4,7 +4,7 @@ const { MealPlan } = require("../models/MealPlanModel");
 
 // Create meal item
 const createMealPlan = asyncHandler(async (req, res) => {
-    const { name, description, ingredients, preference, calories, protein, fat, carbs } = req.body;
+    let { name, description, ingredients, preference, calories, protein, fat, carbs } = req.body;
 
     // Confirm required fields are provided
     if (!name || !description || !ingredients || !preference || !calories || !protein || !fat || !carbs) {
@@ -16,7 +16,11 @@ const createMealPlan = asyncHandler(async (req, res) => {
         return res.status(400).json({ message: "Meal image is required" });
     }
 
-    const mealImage = req.file.path; // Multer stores the file path in req.file
+    const mealImage = `/uploads/${req.file.filename}`;
+
+    if (!Array.isArray(preference)) {
+        preference = preference.split(",").map((item) => item.trim()); // Ensure array format
+    }
 
     // Check for duplicate meal item
     const duplicate = await MealPlan.findOne({ name }).exec();
@@ -27,7 +31,15 @@ const createMealPlan = asyncHandler(async (req, res) => {
 
     // Create and store new meal item
     const mealItem = await MealPlan.create({
-        name, description, ingredients, preference, calories, protein, fat, carbs, mealImage
+        name, 
+        description, 
+        ingredients: ingredients.split(",").map((item) => item.trim()), 
+        preference, 
+        calories, 
+        protein, 
+        fat, 
+        carbs, 
+        mealImage
     });
 
     // Success or error message
