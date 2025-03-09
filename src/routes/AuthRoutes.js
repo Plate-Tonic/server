@@ -7,10 +7,10 @@ const router = express.Router();
 // Get security questions
 router.get("/questions", asyncHandler(getSecurityQuestions));
 
-// Register a new user
+// Register new user
 router.post("/register", asyncHandler(registerUser));
 
-// Login an existing user
+// Login existing user
 router.post("/login", asyncHandler(loginUser));
 
 // Get security question for user
