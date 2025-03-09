@@ -3,6 +3,7 @@ const bcrypt = require("bcrypt")
 const {
     User
 } = require("../models/UserModel");
+
 const {
     MealPlan
 } = require("../models/MealPlanModel");
@@ -347,6 +348,13 @@ const getTracker = asyncHandler(async (req, res) => {
     const {
         userId
     } = req.params;
+
+    // Validate the ObjectId of the user
+        if (!mongoose.Types.ObjectId.isValid(userId)) {
+            return res.status(400).json({
+                message: "Invalid userId"
+            });
+        }
 
     // Fetch user by ID
     const user = await User.findById(userId);

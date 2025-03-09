@@ -2,6 +2,7 @@ const jwt = require('jsonwebtoken');
 
 // Middleware to validate JWT token
 const validateToken = (req, res, next) => {
+    console.log("validateToken middleware hit!");
     // Extract token from request header
     const token = req.header('Authorization')?.split(' ')[1];
 
@@ -26,7 +27,7 @@ const validateToken = (req, res, next) => {
 
         next();
     } catch (error) {
-        console.error("Token validation failed:", error.message);
+        console.log("Invalid token error:", error.message);
         res.status(400).json({ message: "Invalid token." });
     }
 };
