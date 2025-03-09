@@ -252,6 +252,8 @@ const getTracker = asyncHandler(async (req, res) => {
 
 // Add calorie and macro tracker for non-users
 const addTrackerNonUser = asyncHandler(async (req, res) => {
+    console.log("Non-user request received:", req.body);
+    console.log("Authorization header:", req.headers.authorization);
     const { age, weight, height, gender, activity, goal } = req.body;
 
     // Check if required fields are provided

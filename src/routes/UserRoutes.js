@@ -5,11 +5,14 @@ const { getUser, getAllUsers, updateUser, deleteUser, addDietaryPreference, upda
 
 const router = express.Router();
 
-// Get calorie and macro tracker
-router.get("/:userId/calorie-tracker", asyncHandler(getTracker));
+// Add calorie and macro tracker for non-users (no token required)
+router.post("/calorie-tracker", asyncHandler(addTrackerNonUser));
 
-// Apply validateToken middleware to following routes in this file
+// Apply validateToken middleware to routes that require authentication
 router.use(validateToken);
+
+// Get calorie and macro tracker for users (requires token)
+router.get("/:userId/calorie-tracker", asyncHandler(getTracker));
 
 // Get all user profiles
 router.get("/", asyncHandler(getAllUsers));
@@ -35,13 +38,10 @@ router.post("/:userId/meal-plan", asyncHandler(addUserMealPlan));
 // Delete user's meal plan
 router.delete("/:userId/meal-plan/:mealId", asyncHandler(deleteUserMealPlan));
 
-// Add calorie and macro tracker for non-users
-router.post("/calorie-tracker", asyncHandler(addTrackerNonUser));
-
-// Add calorie and macro tracker for users
+// Add calorie and macro tracker for users (requires token)
 router.post("/:userId/calorie-tracker", asyncHandler(addTracker));
 
-// Update calorie and macro tracker
+// Update calorie and macro tracker (requires token)
 router.put("/:userId/calorie-tracker", asyncHandler(updateTracker));
 
 module.exports = router;
