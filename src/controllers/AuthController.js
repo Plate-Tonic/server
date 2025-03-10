@@ -118,6 +118,11 @@ const resetPassword = asyncHandler(async (req, res) => {
         return res.status(404).json({ message: "User not found" });
     }
 
+    // Check password length
+    if (newPassword.length < 8) {
+        return res.status(400).json({ message: "Password must be at least 8 characters long." });
+    }
+    
     // Hash the new password
     const hashedPassword = await bcrypt.hash(newPassword, 10);
 
