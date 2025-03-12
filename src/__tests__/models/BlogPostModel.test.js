@@ -92,7 +92,7 @@ describe("BlogPost Model Structure", () => {
             await duplicateTitlePost.save();
         } catch (error) {
             expect(error).toBeDefined();  // Check that an error was thrown
-            expect(error.name).toBe("MongoError");  // Check for a MongoDB error
+            expect(error.name).toBe("MongoServerError");  // Check for a MongoDB error
             expect(error.code).toBe(11000);  // MongoDB error code for duplicate key error
         }
     });
