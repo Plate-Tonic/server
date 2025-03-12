@@ -117,7 +117,7 @@ const deleteUser = asyncHandler(async (req, res) => {
     }
 
     // Success message
-    res.json({ message: `User ${user.email} deleted successfully` });
+    res.json({ message: `User ${userId} deleted successfully` });
 });
 
 // Add user's dietary preference
