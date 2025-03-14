@@ -22,6 +22,12 @@ async function seed() {
             tags: ["Nutrition", "Meal Prep"]
         },
         {
+            title: "Meal Prepping for Busy Weekdays",
+            author: "Karen Pham",
+            content: "Meal prepping is a game-changer for anyone with a busy lifestyle. By preparing meals ahead of time, you can ensure you always have healthy options available, even on the busiest of days. Not only does it save time during the week, but it also prevents the temptation to grab unhealthy takeout or processed foods.\n\n To make meal prepping work for you, start by choosing recipes that are simple, easy to prepare, and can be stored for several days. Think about dishes like salads, stir-fries, or casseroles that can be made in large batches and stored in individual containers. Preparing ingredients in advance, such as chopping vegetables or marinating proteins, can also cut down on cooking time throughout the week.\n\n Meal prepping can be done on weekends or any day you have some free time, and it doesn't have to take hours. With just an hour or two of prep, you can have multiple meals ready for the week, making healthy eating a breeze, no matter how hectic your schedule is.",
+            tags: ["Meal Prep"]
+        },
+        {
             title: "Understanding caloric deficit",
             author: "Jane Doe",
             content: `A caloric deficit is a key concept in weight loss and refers to the state in which you consume fewer calories than your body needs to maintain its current weight. When you’re in a caloric deficit, your body starts to use stored fat for energy, leading to fat loss over time.\n\n
@@ -47,7 +53,26 @@ async function seed() {
             If you're craving something savory, try roasted chickpeas, hummus with raw veggies, or a small portion of cheese with whole-grain crackers. These snacks are high in fiber and healthy fats, keeping you full and energized until your next meal.\n\n
             When selecting snacks, aim for whole foods that are minimally processed and free from added sugars. Proper portion control is also important – even healthy snacks can add up in calories if consumed in large amounts. Keep your snacks balanced and satisfying, and they will contribute positively to your weight management goals.`,
             tags: ["Healthy Eating", "Weight Management"]
+        },
+        {
+            title: "The Power of Sleep in Weight Loss",
+            author: "John Smith",
+            content: "Getting enough quality sleep is often overlooked when it comes to weight loss. However, sleep plays a crucial role in managing weight, as it affects hormones that regulate hunger and metabolism. Lack of sleep can increase the production of ghrelin, a hormone that stimulates appetite, while decreasing leptin, the hormone responsible for making you feel full.\n\n Sleep deprivation can also impact your ability to make healthy food choices, leading to cravings for high-calorie, processed foods. Additionally, poor sleep can reduce your energy levels, making it harder to stay active and burn calories.\n\n To improve sleep quality, aim for 7-9 hours of sleep per night, create a relaxing bedtime routine, and avoid consuming caffeine or heavy meals close to bedtime. Prioritizing sleep can support your weight loss goals and improve your overall well-being.",
+            tags: ["Weight Management"]
+        },
+        {
+            title: "Why Meal Timing Matters for Weight Loss",
+            author: "Tom Davis",
+            content: "Meal timing can play a significant role in weight loss. While the total number of calories you consume is important, when you eat may also impact how your body processes those calories. Research suggests that eating earlier in the day, particularly during breakfast, can help with weight loss, as the body is more insulin-sensitive in the morning and can better process food.\n\n On the other hand, eating late at night can disrupt the body’s natural circadian rhythm, leading to weight gain and poor sleep quality. Additionally, consuming large meals right before bed can cause indigestion and negatively affect metabolism.\n\n To optimize weight loss, try eating balanced meals at regular intervals throughout the day, and consider finishing your last meal at least 2-3 hours before bedtime. Focusing on meal timing, alongside portion control and healthy choices, can further support your weight loss goals.",
+            tags: ["Weight Management", "Nutrition"]
+        },
+        {
+            title: "The Benefits of Regular Exercise for Mental Health",
+            author: "Rachel Kim",
+            content: "Regular exercise is not only good for physical health but also has a significant impact on mental well-being. Exercise stimulates the release of endorphins, the body’s natural mood boosters, which can help reduce stress, anxiety, and depression. Engaging in physical activity can also improve sleep quality, increase self-esteem, and boost overall mood.\n\n Exercise doesn’t have to be intense or time-consuming to be beneficial. Even moderate activities like walking, cycling, or yoga can have a positive impact on mental health. The key is consistency – aim for at least 30 minutes of physical activity most days of the week to experience the full mental health benefits.\n\n In addition to its immediate effects, regular exercise helps build resilience to stress over time, making it easier to cope with challenges in daily life. Whether it’s a workout at the gym, a morning jog, or a dance class, finding an activity you enjoy is the best way to stay committed and improve both body and mind.",
+            tags: ["Fitness"]
         }
+        
     ];
     for (let blog of blogPosts) {
         try {
@@ -151,7 +176,98 @@ async function seed() {
             fat: 13,
             carbs: 20,
             mealImage: `/uploads/stir_fried_tofu.png`
-        }
+        },
+        {
+            name: "Baked Sweet Potato with Black Beans & Avocado",
+            description: `1. Preheat oven to 400°F (200°C). Wash and pierce 1 medium sweet potato with a fork several times.\n\n
+            2. Bake for 40-45 minutes or until tender.\n\n
+            3. In a bowl, mix 1/2 cup black beans (rinsed), 1 tbsp olive oil, 1 tbsp lime juice, salt, and pepper.\n\n
+            4. Once baked, slice the sweet potato open and stuff with the black bean mixture.\n\n
+            5. Top with 1/4 sliced avocado and optional cilantro or red pepper flakes for extra flavor. Enjoy!`,
+            ingredients: ["1 medium sweet potato", "1/2 cup black beans (rinsed)", "1 tbsp olive oil", "1 tbsp lime juice", "1/4 avocado (sliced)", "Salt and pepper", "Optional: cilantro, red pepper flakes"],
+            preference: ["vegetarian", "vegan", "gluten-free", "nut-free", "none"],
+            calories: 400,
+            protein: 12,
+            fat: 14,
+            carbs: 60,
+            mealImage: "/uploads/baked_sweet_potato.png"
+        },
+        {
+            name: "Lentil & Spinach Soup",
+            description: `1. Heat 1 tbsp olive oil in a pot over medium heat. Add 1/2 chopped onion, 1 minced garlic clove, and sauté until soft.\n\n
+            2. Add 1/2 cup dried lentils, 2 cups vegetable broth, 1/2 tsp cumin, and bring to a boil.\n\n
+            3. Lower heat and simmer for 25 minutes until lentils are tender.\n\n
+            4. Stir in 1 cup fresh spinach and cook for 2 more minutes.\n\n
+            5. Season with salt, pepper, and optional lemon juice before serving. Enjoy warm!`,
+            ingredients: ["1/2 cup dried lentils", "2 cups vegetable broth", "1/2 onion (chopped)", "1 garlic clove (minced)", "1 cup fresh spinach", "1/2 tsp cumin", "1 tbsp olive oil", "Salt and pepper", "Optional: lemon juice"],
+            preference: ["vegetarian", "vegan", "gluten-free", "nut-free", "none"],
+            calories: 350,
+            protein: 18,
+            fat: 8,
+            carbs: 50,
+            mealImage: "/uploads/lentil_spinach_soup.png"
+        },
+        {
+            name: "Greek Yogurt Parfait with Berries & Granola",
+            description: `1. In a bowl or glass, layer 1/2 cup of Greek yogurt at the bottom.\n\n
+            2. Add a layer of 1/4 cup mixed berries (blueberries, raspberries, and strawberries).\n\n
+            3. Sprinkle 1 tbsp of granola on top.\n\n
+            4. Repeat the layers until all ingredients are used.\n\n
+            5. Drizzle with 1 tsp of honey (optional) and enjoy a refreshing, protein-packed breakfast or snack!`,
+            ingredients: ["1/2 cup Greek yogurt (unsweetened)", "1/4 cup mixed berries (blueberries, raspberries, strawberries)", "1 tbsp granola", "Optional: 1 tsp honey)"],
+            preference: ["vegetarian", "nut-free", "none"],
+            calories: 250,
+            protein: 15,
+            fat: 6,
+            carbs: 30,
+            mealImage: "/uploads/greek_yogurt_parfait.png"
+        },
+        {
+            name: "Spinach & Feta Stuffed Peppers",
+            description: `1. Preheat oven to 375°F (190°C). Cut 2 bell peppers in half and remove the seeds.\n\n
+            2. In a bowl, mix 1 cup cooked quinoa, 1/2 cup crumbled feta cheese, 1/2 cup chopped spinach, 1/2 tsp oregano, salt, and pepper.\n\n
+            3. Stuff the mixture into the bell pepper halves and drizzle with 1 tbsp olive oil.\n\n
+            4. Bake for 20-25 minutes until the peppers are tender.\n\n
+            5. Serve warm and enjoy a delicious Mediterranean-inspired dish!`,
+            ingredients: ["2 bell peppers (halved, seeds removed)", "1 cup cooked quinoa", "1/2 cup feta cheese (crumbled)", "1/2 cup spinach (chopped)", "1/2 tsp oregano", "1 tbsp olive oil", "Salt and pepper to taste"],
+            preference: ["vegetarian", "gluten-free", "nut-free", "none"],
+            calories: 350,
+            protein: 18,
+            fat: 14,
+            carbs: 40,
+            mealImage: "/uploads/spinach_feta_peppers.png"
+        },
+        {
+            name: "Teriyaki Chicken & Broccoli Bowl",
+            description: `1. Heat 1 tsp olive oil in a pan over medium heat. Add 1 small chicken breast (cubed) and cook until golden brown.\n\n
+            2. Add 1/2 cup broccoli florets and stir-fry for 3-4 minutes.\n\n
+            3. Pour in 2 tbsp homemade or store-bought teriyaki sauce, stirring to coat everything evenly.\n\n
+            4. Serve over 1/2 cup cooked brown rice.\n\n
+            5. Garnish with sesame seeds and green onions (optional) and enjoy!`,
+            ingredients: ["1 small chicken breast (cubed)", "1/2 cup broccoli florets", "1/2 cup cooked brown rice", "2 tbsp teriyaki sauce (gluten-free)", "1 tsp olive oil", "Optional: Sesame seeds, green onions for garnish"],
+            preference: ["gluten-free", "nut-free", "none"],
+            calories: 450,
+            protein: 40,
+            fat: 10,
+            carbs: 45,
+            mealImage: "/uploads/teriyaki_chicken_broccoli.png"
+        },
+        {
+            name: "Sweet Potato & Chickpea Curry",
+            description: `1. Heat 1 tbsp of olive oil in a large pot over medium heat. Add 1 diced onion and sauté until softened.\n\n
+            2. Add 2 cloves of garlic (minced) and 1 tbsp of grated ginger, and cook for another minute.\n\n
+            3. Stir in 1 tbsp of curry powder, 1/2 tsp of cumin, and 1/4 tsp of turmeric, cooking for a minute until fragrant.\n\n
+            4. Add 2 medium sweet potatoes (peeled and cubed), 1 can of chickpeas (drained and rinsed), 1 can of diced tomatoes, and 1 cup of coconut milk.\n\n
+            5. Simmer for 20-25 minutes, until the sweet potatoes are tender.\n\n
+            6. Season with salt and pepper to taste and serve with fresh cilantro or over brown rice.`,
+            ingredients: ["1 tbsp olive oil", "1 onion (diced)", "2 cloves garlic (minced)", "1 tbsp grated ginger", "1 tbsp curry powder", "1/2 tsp cumin", "1/4 tsp turmeric", "2 medium sweet potatoes (peeled and cubed)", "1 can chickpeas (drained and rinsed)", "1 can diced tomatoes", "1 cup coconut milk", "Salt and pepper to taste", "Optional: Fresh cilantro, Brown rice"],
+            preference: ["vegetarian", "vegan", "gluten-free", "nut-free", "none"],
+            calories: 450,
+            protein: 12,
+            fat: 18,
+            carbs: 60,
+            mealImage: "/uploads/sweet_potato_chickpea_curry.png"
+        },
     ];
     const mealItemIds = [];
     for (let meal of mealItems) {
@@ -167,7 +283,7 @@ async function seed() {
     // Seed users
     const users = [
         {
-            name: "Veronica Chung",
+            name: "Admin User",
             email: "admin@platetonic.com",
             password: bcrypt.hashSync("admintest", 10),
             isAdmin: true,
