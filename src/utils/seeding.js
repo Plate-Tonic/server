@@ -190,7 +190,7 @@ async function seed() {
             protein: 12,
             fat: 14,
             carbs: 60,
-            mealImage: "/uploads/baked_sweet_potato.png"
+            mealImage: `/uploads/baked_sweet_potato.png`
         },
         {
             name: "Lentil & Spinach Soup",
@@ -205,7 +205,7 @@ async function seed() {
             protein: 18,
             fat: 8,
             carbs: 50,
-            mealImage: "/uploads/lentil_spinach_soup.png"
+            mealImage: `/uploads/lentil_spinach_soup.png`
         },
         {
             name: "Greek Yogurt Parfait with Berries & Granola",
@@ -220,7 +220,7 @@ async function seed() {
             protein: 15,
             fat: 6,
             carbs: 30,
-            mealImage: "/uploads/greek_yogurt_parfait.png"
+            mealImage: `/uploads/greek_yogurt_parfait.png`
         },
         {
             name: "Spinach & Feta Stuffed Peppers",
@@ -235,7 +235,7 @@ async function seed() {
             protein: 18,
             fat: 14,
             carbs: 40,
-            mealImage: "/uploads/spinach_feta_peppers.png"
+            mealImage: `/uploads/spinach_feta_peppers.png`
         },
         {
             name: "Teriyaki Chicken & Broccoli Bowl",
@@ -250,7 +250,7 @@ async function seed() {
             protein: 40,
             fat: 10,
             carbs: 45,
-            mealImage: "/uploads/teriyaki_chicken_broccoli.png"
+            mealImage: `/uploads/teriyaki_chicken_broccoli.png`
         },
         {
             name: "Sweet Potato & Chickpea Curry",
@@ -266,7 +266,7 @@ async function seed() {
             protein: 12,
             fat: 18,
             carbs: 60,
-            mealImage: "/uploads/sweet_potato_chickpea_curry.png"
+            mealImage: `/uploads/sweet_potato_chickpea_curry.png`
         },
     ];
     const mealItemIds = [];
